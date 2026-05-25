@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VetCalc</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f3ef;--card:#fff;--text:#1a1a18;--muted:#6b6b66;--border:rgba(0,0,0,0.12);
+  --accent:#0f6e56;--al:#e1f5ee;--at:#085041;
+  --danger:#d85a30;--dl:#faece7;
+  --warn:#ba7517;--wl:#faeeda;
+  --info:#185fa5;--il:#e6f1fb;
+  --r:12px;--rs:8px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Hiragino Sans','Hiragino Kino Gothic ProN',sans-serif;font-size:14px;min-height:100vh}
+.hdr{background:var(--accent);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:100}
+.hdr h1{font-size:19px;font-weight:700}
+.hdr small{font-size:11px;opacity:.75;display:block;margin-top:1px}
+.nav{background:var(--card);display:flex;overflow-x:auto;border-bottom:1px solid var(--border);position:sticky;top:55px;z-index:99;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nt{flex-shrink:0;padding:10px 13px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;user-select:none}
+.nt.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tp{display:none;flex-direction:column;gap:10px;padding:12px}
+.tp.on{display:flex}
+.card{background:var(--card);border-radius:var(--r);border:.5px solid var(--border)}
+.ch{padding:11px 14px 10px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:9px}
+.chi{width:32px;height:32px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ch h2{font-size:14px;font-weight:700}
+.ch p{font-size:11px;color:var(--muted);margin-top:1px}
+.cb{padding:13px;display:flex;flex-direction:column;gap:10px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.f input,.f select{padding:9px 11px;border:1px solid var(--border);border-radius:var(--rs);font-size:14px;background:var(--bg);color:var(--text);width:100%;-webkit-appearance:none;appearance:none}
+.f input:focus,.f select:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(15,110,86,.1)}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.btn{padding:11px;border-radius:var(--rs);border:none;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;transition:opacity .1s}
+.btn:active{opacity:.75}
+.bp{background:var(--accent);color:#fff}
+.bd{background:var(--danger);color:#fff}
+.bw{background:var(--warn);color:#fff}
+.bo{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:13px;padding:9px}
+.rb{border-radius:var(--rs);padding:12px 14px}
+.rbg{background:var(--al)}.rbd{background:var(--dl)}.rbw{background:var(--wl)}
+.rb .rl{font-size:11px;font-weight:700;margin-bottom:4px;letter-spacing:.03em}
+.rbg .rl{color:var(--at)}.rbd .rl{color:var(--danger)}.rbw .rl{color:var(--warn)}
+.rb .rv{font-size:22px;font-weight:800;line-height:1.2}
+.rbg .rv{color:var(--at)}.rbd .rv{color:var(--danger)}.rbw .rv{color:var(--warn)}
+.rb .rs{font-size:11px;margin-top:4px;line-height:1.5}
+.rbg .rs{color:var(--accent)}.rbd .rs{color:var(--danger)}.rbw .rs{color:var(--warn)}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:.5px solid rgba(0,0,0,.07);font-size:12px;gap:6px}
+.rrow:last-child{border-bottom:none}
+.rn{font-weight:700;line-height:1.3}
+.rsub{font-size:10px;color:var(--muted);margin-top:1px}
+.rval{text-align:right;flex-shrink:0}
+.rval strong{font-size:14px;font-weight:800;display:block}
+.rval small{font-size:10px;color:var(--muted)}
+.drug-row{background:var(--bg);border-radius:var(--rs);padding:10px;position:relative}
+.drug-row+.drug-row{margin-top:7px}
+.rmv{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 5px}
+.sep{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;padding:3px 0}
+.wbc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ci{background:var(--bg);border-radius:var(--rs);padding:9px 11px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.cl{font-size:10px;color:var(--muted);font-weight:700;text-align:center;line-height:1.3}
+.cn{font-size:26px;font-weight:800;color:var(--text)}
+.cb2{display:flex;gap:7px}
+.cbtn{width:38px;height:38px;border-radius:var(--rs);border:.5px solid var(--border);background:var(--card);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cbtn.p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cbtn.m{background:var(--dl);color:var(--danger);border-color:rgba(216,90,48,.3)}
+.wtot{background:var(--bg);border-radius:var(--rs);padding:9px 12px;font-size:13px;display:flex;justify-content:space-between;align-items:center;font-weight:600}
+.badge{display:inline-flex;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700}
+.bn{background:var(--dl);color:var(--danger)}
+.note{background:var(--il);border-radius:var(--rs);padding:9px 11px;font-size:11px;color:var(--info);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="hdr"><h1>&#x1F43E; VetCalc</h1><small>&#x736F;&#x533B;&#x7642;&#x5411;&#x3051;&#x8A08;&#x7B97;&#x30C4;&#x30FC;&#x30EB;</small></div>
+<div class="nav">
+  <div class="nt on" onclick="sw('dose',this)">&#x1F48A; &#x85AC;&#x5264;</div>
+  <div class="nt" onclick="sw('fluid',this)">&#x1F4A7; &#x8F38;&#x6DB2;</div>
+  <div class="nt" onclick="sw('cri',this)">&#x23F1; CRI</div>
+  <div class="nt" onclick="sw('emg',this)">&#x1F6A8; &#x6551;&#x6025;</div>
+  <div class="nt" onclick="sw('anes',this)">&#x1F489; &#x9EBB;&#x9154;</div>
+  <div class="nt" onclick="sw('hema',this)">&#x1F52C; &#x8840;&#x6DB2;</div>
+  <div class="nt" onclick="sw('nutr',this)">&#x1F37D; &#x6804;&#x990A;</div>
+  <div class="nt" onclick="sw('cardio',this)">&#x1FAC0; &#x5FAA;&#x74B0;</div>
+  <div class="nt" onclick="sw('misc',this)">&#x1F4D0; &#x305D;&#x306E;&#x4ED6;</div>
+  <div class="nt" onclick="sw('lowfat',this)">&#x1F96C; &#x4F4E;&#x8102;&#x80AA;&#x98DF;</div>
+</div>
+<div class="tp on" id="t-dose">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--al)">&#x1F489;</div><div><h2>&#x6CE8;&#x5C04;&#x85AC; &#x7528;&#x91CF;&#x8A08;&#x7B97;</h2><p>&#x4F53;&#x91CD;&#x00D7;&#x7528;&#x91CF;&#x304B;&#x3089;&#x5FC5;&#x8981;&#x6DB2;&#x91CF;&#x3092;&#x7B97;&#x51FA;</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="ij-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x6295;&#x4E0E;&#x91CF;</label><input type="number" id="ij-dose" placeholder="0.2" step="0.01" inputmode="decimal"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>&#x88FD;&#x5264;&#x6FC3;&#x5EA6; (mg/mL)</label><input type="number" id="ij-conc" placeholder="10" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x5358;&#x4F4D;</label><select id="ij-unit"><option value="1">mg/kg</option><option value="0.001">&#x3BC;g/kg</option><option value="0.000001">ng/kg</option></select></div>
+      </div>
+      <button class="btn bp" onclick="calcInj()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="ij-r" style="display:none"><div class="rl">&#x5FC5;&#x8981;&#x6DB2;&#x91CF;</div><div class="rv" id="ij-v"></div><div class="rs" id="ij-s"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--il)">&#x1F48A;</div><div><h2>&#x9322;&#x5264; &#x5FC5;&#x8981;&#x6570;&#x8A08;&#x7B97;</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="tb-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x6295;&#x4E0E;&#x91CF; (mg/kg)</label><input type="number" id="tb-dose" placeholder="5" step="0.1" inputmode="decimal"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>&#x542B;&#x6709;&#x91CF; (mg/&#x9322;)</label><input type="number" id="tb-str" placeholder="50" step="1" inputmode="numeric"></div>
+        <div class="f"><label>&#x6295;&#x4E0E;&#x56DE;&#x6570;/&#x65E5;</label><select id="tb-freq"><option value="1">SID (1&#x56DE;)</option><option value="2">BID (2&#x56DE;)</option><option value="3">TID (3&#x56DE;)</option><option value="4">QID (4&#x56DE;)</option></select></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>&#x51E6;&#x65B9;&#x65E5;&#x6570;</label><input type="number" id="tb-days" placeholder="7" step="1" inputmode="numeric"></div>
+        <div></div>
+      </div>
+      <button class="btn bp" onclick="calcTab()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="tb-r" style="display:none"><div class="rl">1&#x56DE;&#x6295;&#x4E0E;&#x91CF;</div><div class="rv" id="tb-v"></div><div class="rs" id="tb-s"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--wl)">&#x1F4D0;</div><div><h2>&#x4F53;&#x8868;&#x9762;&#x7A4D; (BSA) <span class="badge bn">NEW</span></h2><p>0.1 &#x00D7; BW^0.667</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="bs-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="bs-sp"><option value="dog">&#x72AC;</option><option value="cat">&#x732B;</option></select></div>
+      </div>
+      <div class="f"><label>&#x6295;&#x4E0E;&#x91CF; (mg/m&#x00B2;) &#x4EFB;&#x610F;</label><input type="number" id="bs-mgm2" placeholder="&#x7A7A;&#x6B04;&#x3067;BSA&#x306E;&#x307F;" step="1" inputmode="decimal"></div>
+      <button class="btn bp" onclick="calcBSA()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="bs-r" style="display:none"><div class="rl">&#x4F53;&#x8868;&#x9762;&#x7A4D;</div><div class="rv" id="bs-v"></div><div class="rs" id="bs-s"></div></div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-fluid">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--il)">&#x1F4A7;</div><div><h2>&#x8F38;&#x6DB2;&#x30EC;&#x30FC;&#x30C8;&#x8A08;&#x7B97;</h2><p>&#x7DAD;&#x6301;&#x91CF; + &#x8131;&#x6C34;&#x88DC;&#x6B63;</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="fl-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x7DAD;&#x6301;&#x8F38;&#x6DB2;&#x91CF;</label>
+          <select id="fl-rt" onchange="document.getElementById('fl-cw').style.display=this.value==='c'?'block':'none'">
+            <option value="1">1 mL/kg/h</option>
+            <option value="2">2 mL/kg/h</option>
+            <option value="3">3 mL/kg/h</option>
+            <option value="5">5 mL/kg/h</option>
+            <option value="10">10 mL/kg/h</option>
+            <option value="c">&#x30AB;&#x30B9;&#x30BF;&#x30E0;</option>
+          </select>
+        </div>
+      </div>
+      <div class="f" id="fl-cw" style="display:none"><label>&#x30AB;&#x30B9;&#x30BF;&#x30E0; (mL/kg/h)</label><input type="number" id="fl-cv" placeholder="2.0" step="0.1" inputmode="decimal"></div>
+      <div class="r2">
+        <div class="f"><label>&#x8131;&#x6C34;&#x5EA6; (%)</label><select id="fl-dh"><option value="0">&#x306A;&#x3057;</option><option value="5">5%</option><option value="7">7%</option><option value="10">10%</option><option value="12">12%</option></select></div>
+        <div class="f"><label>&#x88DC;&#x6B63;&#x6642;&#x9593; (h)</label><input type="number" id="fl-dh-h" value="4" step="1" inputmode="numeric"></div>
+      </div>
+      <button class="btn bp" onclick="calcFluid()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="fl-r" style="display:none"><div class="rl">&#x63A8;&#x596A;&#x8F38;&#x6DB2;&#x30EC;&#x30FC;&#x30C8;</div><div class="rv" id="fl-v"></div><div class="rs" id="fl-s"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--al)">&#x23F1;</div><div><h2>&#x70B9;&#x6EF4;&#x6D41;&#x901F;&#x8A08;&#x7B97;</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x7DCF;&#x6DB2;&#x91CF; (mL)</label><input type="number" id="dr-vol" placeholder="500" step="1" inputmode="numeric"></div>
+        <div class="f"><label>&#x6295;&#x4E0E;&#x6642;&#x9593; (h)</label><input type="number" id="dr-time" placeholder="4" step="0.5" inputmode="decimal"></div>
+      </div>
+      <div class="f"><label>&#x70B9;&#x6EF4;&#x30BB;&#x30C3;&#x30C8;</label><select id="dr-set"><option value="20">&#x901A;&#x5E38; (20&#x6ECB;/mL)</option><option value="60">&#x5FAE;&#x91CF; (60&#x6ECB;/mL)</option></select></div>
+      <button class="btn bp" onclick="calcDrip()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="dr-r" style="display:none"><div class="rl">&#x6D41;&#x901F;</div><div class="rv" id="dr-v"></div><div class="rs" id="dr-s"></div></div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-cri">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--dl)">&#x26A1;</div><div><h2>CRI &#x8907;&#x6570;&#x85AC;&#x5264;&#x8A08;&#x7B97; <span class="badge bn">NEW</span></h2><p>&#x3B3;&#x8A08;&#x7B97; + &#x30D0;&#x30C3;&#x30B0;&#x6DF7;&#x5408;&#x91CF;&#x7B97;&#x51FA;</p></div></div>
+    <div class="cb">
+      <div class="r3">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="ci-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x8F38;&#x6DB2;&#x901F;&#x5EA6; (mL/h)</label><input type="number" id="ci-rate" placeholder="3" step="0.5" inputmode="decimal"></div>
+        <div class="f"><label>&#x30D0;&#x30C3;&#x30B0;&#x5BB9;&#x91CF;</label><select id="ci-bag"><option value="10">10 mL</option><option value="20">20 mL</option><option value="50">50 mL</option><option value="100">100 mL</option><option value="250">250 mL</option><option value="500">500 mL</option></select></div>
+      </div>
+      <div class="f"><label>&#x57FA;&#x6750;&#xFF08;&#x8A08;&#x7B97;&#x306B;&#x306F;&#x5F71;&#x97FF;&#x3057;&#x307E;&#x305B;&#x3093;&#xFF09;</label><select id="ci-base"><option>&#x4E73;&#x9178;&#x30EA;&#x30F3;&#x30B2;&#x30EB; (LR)</option><option>5% &#x30D6;&#x30C9;&#x30A6;&#x7CD6;&#x6DB2;</option><option>&#x751F;&#x7406;&#x98DF;&#x5869;&#x6C34;</option></select></div>
+      <div class="sep">&#x85AC;&#x5264;&#x30EA;&#x30B9;&#x30C8;</div>
+      <div id="ci-drugs"></div>
+      <button class="btn bo" onclick="addDrug()" style="margin-top:3px">&#xFF0B; &#x85AC;&#x5264;&#x3092;&#x8FFD;&#x52A0;</button>
+      <button class="btn bp" onclick="calcCRI()">&#x5168;&#x85AC;&#x5264;&#x3092;&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbd" id="ci-r" style="display:none">
+        <div class="rl">&#x6D41;&#x901F;&#xFF08;&#x5404;&#x85AC;&#x5264;&#xFF09;</div>
+        <div id="ci-rl"></div>
+        <div id="ci-mix"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-emg">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--dl)">&#x1F6A8;</div><div><h2>&#x6551;&#x6025;&#x85AC;&#x5264;&#x91CF; <span class="badge bn">NEW</span></h2><p>&#x4F53;&#x91CD;&#x304B;&#x3089;&#x4E00;&#x62EC;&#x7B97;&#x51FA;</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="eg-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="eg-sp"><option value="dog">&#x72AC;</option><option value="cat">&#x732B;</option></select></div>
+      </div>
+      <button class="btn bd" onclick="calcEmg()">&#x6551;&#x6025;&#x85AC;&#x5264;&#x3092;&#x4E00;&#x62EC;&#x8A08;&#x7B97;</button>
+      <div class="rb rbd" id="eg-r" style="display:none"><div class="rl">&#x6551;&#x6025;&#x85AC;&#x5264;&#x91CF;</div><div id="eg-rl"></div></div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-anes">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--wl)">&#x1F489;</div><div><h2>&#x9EBB;&#x9154;&#x30FB;&#x524D;&#x6295;&#x85AC; &#x8A08;&#x7B97; <span class="badge bn">NEW</span></h2><p>&#x30D7;&#x30ED;&#x30C8;&#x30B3;&#x30EB;&#x5225;</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="an-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="an-sp"><option value="dog">&#x72AC;</option><option value="cat">&#x732B;</option></select></div>
+      </div>
+      <div class="f"><label>&#x30D7;&#x30ED;&#x30C8;&#x30B3;&#x30EB;</label><select id="an-proto">
+        <option value="avoid-sp">&#x958B;&#x8179;&#x624B;&#x8853; &#x975E;&#x9EBB;&#x85AC;&#x30BB;&#x30C3;&#x30C8;</option>
+        <option value="neuter">&#x907F;&#x598A;&#x53BB;&#x52E2;</option>
+        <option value="endo">&#x5185;&#x8996;&#x93E1;</option>
+        <option value="highrisk">&#x30CF;&#x30A4;&#x30EA;&#x30B9;&#x30AF; (CRI)</option>
+        <option value="general">&#x5168;&#x822C;&#xFF08;&#x85AC;&#x5264;&#x9078;&#x629E;&#xFF09;</option>
+      </select></div>
+      <button class="btn bw" onclick="calcAnes()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbw" id="an-r" style="display:none"><div class="rl">&#x9EBB;&#x9154;&#x85AC;&#x5264;&#x91CF;</div><div id="an-rl"></div></div>
+      <div class="note">&#x26A0;&#xFE0F; &#x7528;&#x91CF;&#x306F;&#x53C2;&#x8003;&#x5024;&#x3067;&#x3059;&#x3002;&#x60A3;&#x8005;&#x72B6;&#x614B;&#x30BBASA&#x30B0;&#x30EC;&#x30FC;&#x30C9;&#x306B;&#x5FDC;&#x3058;&#x3066;&#x8ABF;&#x6574;&#x3057;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-hema">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#fcebeb">&#x1F52C;</div><div><h2>&#x767D;&#x8840;&#x7403;&#x767E;&#x5206;&#x6BD4;&#x30AB;&#x30A6;&#x30F3;&#x30BF;&#x30FC;</h2><p>&#x30DC;&#x30BF;&#x30F3;&#x3067;&#x30AB;&#x30A6;&#x30F3;&#x30C8; &#x2192; &#x81EA;&#x52D5;&#x3067;%&#x7B97;&#x51FA;</p></div></div>
+    <div class="cb">
+      <div class="wbc-grid" id="wbc-grid"></div>
+      <div class="wtot"><span>&#x5408;&#x8A08;&#x30AB;&#x30A6;&#x30F3;&#x30C8;</span><span id="wbc-tot" style="font-weight:800">0 / 100</span></div>
+      <div class="r2">
+        <button class="btn bp" onclick="calcWBC()">% &#x3092;&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+        <button class="btn bo" onclick="resetWBC()">&#x30EA;&#x30BB;&#x30C3;&#x30C8;</button>
+      </div>
+      <div class="rb rbg" id="wbc-r" style="display:none"><div class="rl">&#x767D;&#x8840;&#x7403;&#x767E;&#x5206;&#x6BD4;</div><div id="wbc-rl"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#fcebeb">&#x1FA78;</div><div><h2>&#x7DB2;&#x72B6;&#x8D64;&#x8840;&#x7403;&#x7523;&#x751F;&#x6307;&#x6570; (RPI)</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>Retic (%)</label><input type="number" id="rp-r" placeholder="1.5" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>PCV / Ht (%)</label><input type="number" id="rp-p" placeholder="35" step="1" inputmode="decimal"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>&#x6B63;&#x5E38; PCV (%)</label><input type="number" id="rp-n" value="45" step="1" inputmode="decimal"></div>
+        <div class="f"><label>&#x6210;&#x719F;&#x6642;&#x9593;&#x88DC;&#x6B63;</label><select id="rp-mt"><option value="1">1&#x65E5;&#xFF08;&#x6B63;&#x5E38;&#xFF09;</option><option value="1.5">1.5&#x65E5;</option><option value="2">2&#x65E5;&#xFF08;&#x4E2D;&#x7B49;&#x5EA6;&#xFF09;</option><option value="2.5">2.5&#x65E5;</option><option value="3">3&#x65E5;&#xFF08;&#x91CD;&#x5EA6;&#xFF09;</option></select></div>
+      </div>
+      <button class="btn bp" onclick="calcRPI()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="rp-r2" style="display:none"><div class="rl">RPI</div><div class="rv" id="rp-v"></div><div class="rs" id="rp-s"></div></div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-nutr">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--al)">&#x1F37D;</div><div><h2>RER / DER &#x8A08;&#x7B97;</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="nr-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="nr-sp"><option>&#x72AC;</option><option>&#x732B;</option></select></div>
+      </div>
+      <div class="f"><label>&#x30E9;&#x30A4;&#x30D5;&#x30B9;&#x30C6;&#x30FC;&#x30B8;&#x30FB;&#x72B6;&#x614B;</label><select id="nr-fac">
+        <option value="1.0">&#x00D7;1.0 &#x2014; &#x7D76;&#x98DF;&#x30FB;&#x91CD;&#x7B43;&#x60A3;&#x8005;</option>
+        <option value="1.2">&#x00D7;1.2 &#x2014; &#x6E1B;&#x91CF;&#x4E2D; / &#x80A5;&#x6E80;&#x50BE;&#x5411;</option>
+        <option value="1.3">&#x00D7;1.3 &#x2014; &#x9AD8;&#x9F62;&#x72AC;&#x732B;</option>
+        <option value="1.4">&#x00D7;1.4 &#x2014; &#x53BB;&#x52E2;&#x30FB;&#x907F;&#x598A;&#x6E08;&#x307F;&#x6210;&#x4F53;</option>
+        <option value="1.5">&#x00D7;1.5 &#x2014; &#x5165;&#x9662;&#x60A3;&#x8005; / &#x8853;&#x5F8C;</option>
+        <option value="1.6" selected>&#x00D7;1.6 &#x2014; &#x672A;&#x53BB;&#x52E2;&#x6210;&#x4F53;&#xFF08;&#x6A19;&#x6E96;&#xFF09;</option>
+        <option value="1.8">&#x00D7;1.8 &#x2014; &#x6D3B;&#x52D5;&#x7684;&#x306A;&#x72AC;</option>
+        <option value="2.0">&#x00D7;2.0 &#x2014; &#x6210;&#x9577;&#x671F;&#xFF08;&#x5B50;&#x72AC;&#x30FB;&#x5B50;&#x732B;&#xFF09;</option>
+        <option value="2.5">&#x00D7;2.5 &#x2014; &#x6388;&#x4E73;&#x671F;</option>
+        <option value="3.0">&#x00D7;3.0 &#x2014; &#x598A;&#x5A20;&#x5F8C;&#x671F;</option>
+      </select></div>
+      <button class="btn bp" onclick="calcDER()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="nr-r" style="display:none"><div class="rl">&#x30A8;&#x30CD;&#x30EB;&#x30AE;&#x30FC;&#x8981;&#x6C42;&#x91CF;</div><div class="rv" id="nr-v"></div><div class="rs" id="nr-s"></div></div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-cardio">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--dl)">&#x1F4CF;</div><div><h2>LVIDN &#x8A08;&#x7B97;</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="lv-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>LVIDd (cm)</label><input type="number" id="lv-d" placeholder="3.0" step="0.01" inputmode="decimal"></div>
+      </div>
+      <button class="btn bp" onclick="calcLVID()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="lv-r" style="display:none"><div class="rl">LVIDdN</div><div class="rv" id="lv-v"></div><div class="rs" id="lv-s"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--dl)">&#x2764;&#xFE0F;</div><div><h2>&#x5FC3;&#x62CD;&#x51FA;&#x91CF;&#x30FB;&#x5FC3;&#x4FC2;&#x6570;</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="co-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x5FC3;&#x62CD;&#x6570; (bpm)</label><input type="number" id="co-hr" placeholder="120" step="1" inputmode="numeric"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>1&#x56DE;&#x62CD;&#x51FA;&#x91CF; SV (mL)</label><input type="number" id="co-sv" placeholder="15" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>BSA (m&#x00B2;) &#x4EFB;&#x610F;</label><input type="number" id="co-bsa" placeholder="&#x81EA;&#x52D5;&#x8A08;&#x7B97;" step="0.01" inputmode="decimal"></div>
+      </div>
+      <button class="btn bp" onclick="calcCO()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="co-r" style="display:none"><div class="rl">&#x5FC3;&#x62CD;&#x51FA;&#x91CF; (CO)</div><div class="rv" id="co-v"></div><div class="rs" id="co-s"></div></div>
+    </div>
+  </div>
+</div>
+<div class="tp" id="t-misc">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--il)">&#x1F43E;</div><div><h2>&#x72AC;&#x732B; &#x5E74;&#x9F62;&#x63DB;&#x7B97;</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x5B9F;&#x5E74;&#x9F62; (&#x6B73;)</label><input type="number" id="ag-a" placeholder="3" step="1" inputmode="numeric"></div>
+        <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="ag-sp"><option value="dog">&#x72AC;</option><option value="cat">&#x732B;</option></select></div>
+      </div>
+      <button class="btn bp" onclick="calcAge()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="ag-r" style="display:none"><div class="rl">&#x4EBA;&#x9593;&#x63DB;&#x7B97;&#x5E74;&#x9F62;&#xFF08;&#x76EE;&#x5B89;&#xFF09;</div><div class="rv" id="ag-v"></div><div class="rs" id="ag-s"></div></div>
+    </div>
+  </div>
+</div>
+<script>
+function sw(t,el){
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(n=>n.classList.remove('on'));
+  document.getElementById('t-'+t).classList.add('on');
+  el.classList.add('on');
+}
+function sr(id,v,s,type){
+  const el=document.getElementById(id);
+  el.style.display='block';
+  el.className='rb rb'+(type||'g');
+  if(el.querySelector('.rv'))el.querySelector('.rv').innerHTML=v;
+  if(s!==null&&el.querySelector('.rs'))el.querySelector('.rs').innerHTML=s;
+}
+function calcInj(){
+  const bw=+document.getElementById('ij-bw').value,dose=+document.getElementById('ij-dose').value,conc=+document.getElementById('ij-conc').value,unit=+document.getElementById('ij-unit').value;
+  if(!bw||!dose||!conc){alert('全項目を入力してください');return;}
+  const tot=bw*dose*unit,vol=tot/conc;
+  sr('ij-r',vol.toFixed(3)+' <span style="font-size:16px">mL</span>','総投与量: '+tot.toFixed(4)+' mg');
+}
+function calcTab(){
+  const bw=+document.getElementById('tb-bw').value,dose=+document.getElementById('tb-dose').value,str=+document.getElementById('tb-str').value,freq=+document.getElementById('tb-freq').value,days=+document.getElementById('tb-days').value||0;
+  if(!bw||!dose||!str){alert('体重・投与量・含有量を入力してください');return;}
+  const tpd=bw*dose/freq/str;
+  sr('tb-r',tpd.toFixed(2)+' <span style="font-size:16px">錠/回</span>',days?'合計処方数: '+(tpd*freq*days).toFixed(1)+'錠 ('+days+'日分)':'');
+}
+function calcBSA(){
+  const bw=+document.getElementById('bs-bw').value;
+  const sp=document.getElementById('bs-sp').value;
+  const mgm2=+document.getElementById('bs-mgm2').value;
+  if(!bw){alert('体重を入力してください');return;}
+  const k=sp==='cat'?0.100:0.101;
+  const bsa=k*Math.pow(bw,0.667);
+  const label=sp==='cat'?'猻: 0.100×BW^0.667':'犬: 0.101×BW^0.667';
+  sr('bs-r',bsa.toFixed(4)+' m²',mgm2?'投与量: '+(bsa*mgm2).toFixed(2)+' mg | '+label:label);
+}
+function calcFluid(){
+  const bw=+document.getElementById('fl-bw').value;
+  if(!bw){alert('体重を入力してください');return;}
+  const rt=document.getElementById('fl-rt').value;
+  const maint=rt==='c'?(+document.getElementById('fl-cv').value||2):+rt;
+  const dh=+document.getElementById('fl-dh').value,dhh=+document.getElementById('fl-dh-h').value||4;
+  const dv=dh>0?(bw*1000*dh/100)/dhh:0,mv=bw*maint,tot=mv+dv;
+  sr('fl-r',tot.toFixed(1)+' <span style="font-size:16px">mL/h</span>','維持: '+mv.toFixed(1)+' mL/h'+(dv>0?'　脱水補正: '+dv.toFixed(1)+' mL/h ('+dhh+'hで)':''));
+}
+function calcDrip(){
+  const vol=+document.getElementById('dr-vol').value,time=+document.getElementById('dr-time').value,set=+document.getElementById('dr-set').value;
+  if(!vol||!time){alert('液量と時間を入力してください');return;}
+  const mlh=vol/time,drop=mlh/60*set;
+  sr('dr-r',mlh.toFixed(1)+' <span style="font-size:16px">mL/h</span>','滴下速度: '+drop.toFixed(1)+' 滴/分');
+}
+const PRESETS=[
+  {n:'ドパミン',    dose:5,  unit:'γ',        conc:20, note:'20mg/mL (200mg/10mL)'},
+  {n:'ドブタミン',  dose:5,  unit:'γ',        conc:20, note:'20mg/mL (250mg/12.5mL)'},
+  {n:'ミルリノン',  dose:0.5,unit:'γ',        conc:1,  note:'1mg/mL'},
+  {n:'メトクロプラミド',dose:1,unit:'γ',      conc:5,  note:'5mg/mL (10mg/2mL)'},
+  {n:'プロポフォール',dose:0.1,unit:'mg/kg/h',conc:10, note:'10mg/mL'},
+  {n:'ジアゼパム',  dose:0.1,unit:'mg/kg/h',  conc:5,  note:'5mg/mL (10mg/2mL)'},
+  {n:'フェンタニル',dose:2,  unit:'μg/kg/h',  conc:0.05,note:'50μg/mL (0.05mg/mL)'},
+  {n:'モルヒネ',    dose:0.1,unit:'mg/kg/h',  conc:10, note:'10mg/mL'},
+  {n:'リドカイン',  dose:25, unit:'μg/kg/min', conc:20, note:'20mg/mL (2%) — 犬のみ'},
+  {n:'ブトルファノール',dose:0.1,unit:'mg/kg/h',conc:10,note:'10mg/mL'},
+  {n:'ケタミン',    dose:0.1,unit:'mg/kg/h',  conc:100,note:'100mg/mL'},
+  {n:'デクスメデトミジン',dose:1,unit:'μg/kg/h',conc:0.1,note:'0.1mg/mL (100μg/mL)'},
+];
+let dIdx=0;
+function addDrug(preset){
+  const i=dIdx++;
+  const pi=preset?PRESETS.indexOf(preset):0;
+  const opts=PRESETS.map((p,j)=>'<option value="'+j+'"'+(j===pi?' selected':'')+'>'+p.n+'</option>').join('');
+  const p=preset||PRESETS[0];
+  const d=document.createElement('div');
+  d.className='drug-row';d.id='dr'+i;
+  d.innerHTML='<button class="rmv" onclick="this.parentElement.remove()">✕</button>'+
+    '<div class="f" style="margin-bottom:7px"><label>薬剤</label><select id="ds'+i+'" onchange="applyP('+i+',this.value)">'+opts+'</select></div>'+
+    '<div class="r3">'+
+    '<div class="f"><label>投与量</label><input type="number" id="dd'+i+'" value="'+p.dose+'" step="0.01" inputmode="decimal"></div>'+
+    '<div class="f"><label>単位</label><input type="text" id="du'+i+'" value="'+p.unit+'"></div>'+
+    '<div class="f"><label>濃度(mg/mL)</label><input type="number" id="dc'+i+'" value="'+p.conc+'" step="0.1" inputmode="decimal"></div>'+
+    '</div>'+
+    '<div class="f" style="margin-top:6px"><label>備考</label><input type="text" id="dn'+i+'" value="'+p.note+'" style="font-size:11px"></div>';
+  document.getElementById('ci-drugs').appendChild(d);
+}
+function applyP(i,j){
+  const p=PRESETS[+j];
+  document.getElementById('dd'+i).value=p.dose;
+  document.getElementById('du'+i).value=p.unit;
+  document.getElementById('dc'+i).value=p.conc;
+  document.getElementById('dn'+i).value=p.note;
+}
+function calcCRI(){
+  const bw=+document.getElementById('ci-bw').value,rate=+document.getElementById('ci-rate').value,bag=+document.getElementById('ci-bag').value;
+  if(!bw||!rate){alert('体重と輸液速度を入力してください');return;}
+  const rows=document.querySelectorAll('[id^="dr"]');
+  let html='',mixHtml='',hasData=false;
+  rows.forEach(function(row){
+    const i=row.id.replace('dr','');
+    if(!document.getElementById('dd'+i))return;
+    const name=PRESETS[+document.getElementById('ds'+i).value].n;
+    const dose=+document.getElementById('dd'+i).value;
+    const unit=document.getElementById('du'+i).value.trim();
+    const conc=+document.getElementById('dc'+i).value;
+    if(!dose||!conc)return;
+    hasData=true;
+    let mlh,detail;
+    if(unit==='γ'){
+      const ugph=bw*dose*60,mgph=ugph/1000;mlh=mgph/conc;
+      detail=dose+'γ → '+ugph.toFixed(1)+'μg/h → <b>'+mlh.toFixed(3)+'mL/h</b>';
+    }else if(unit.indexOf('mg/kg/h')>=0){
+      const mgph=bw*dose;mlh=mgph/conc;
+      detail=dose+'mg/kg/h → '+mgph.toFixed(3)+'mg/h → <b>'+mlh.toFixed(3)+'mL/h</b>';
+    }else if(unit.indexOf('μg/kg/h')>=0){
+      const mgph=bw*dose/1000;mlh=mgph/conc;
+      detail=dose+'μg/kg/h → '+(bw*dose).toFixed(2)+'μg/h → <b>'+mlh.toFixed(3)+'mL/h</b>';
+    }else if(unit.indexOf('μg/kg/min')>=0){
+      const mgph=bw*dose*60/1000;mlh=mgph/conc;
+      detail=dose+'μg/kg/min → <b>'+mlh.toFixed(3)+'mL/h</b>';
+    }else{mlh=(bw*dose)/conc;detail='→ <b>'+mlh.toFixed(3)+'mL/h</b>';}
+    const dur=bag/rate,addVol=mlh*dur;
+    html+='<div class="rrow"><div><div class="rn">'+name+'</div><div class="rsub">'+detail+'</div></div><div class="rval"><strong style="color:var(--danger)">'+mlh.toFixed(3)+' mL/h</strong></div></div>';
+    mixHtml+='<div class="rrow"><div><div class="rn">'+name+'</div><div class="rsub">'+bag+'mL / '+rate+'mL/h = '+dur.toFixed(1)+'h分</div></div><div class="rval"><strong style="color:var(--danger)">'+addVol.toFixed(2)+' mL</strong><small>基材: '+(bag-addVol).toFixed(2)+'mL</small></div></div>';
+  });
+  if(!hasData){alert('薬剤データを入力してください');return;}
+  document.getElementById('ci-rl').innerHTML=html;
+  document.getElementById('ci-mix').innerHTML='<div style="margin-top:9px;padding-top:9px;border-top:.5px solid rgba(216,90,48,.3)"><div class="rl" style="margin-bottom:4px">バッグ混合量（'+bag+'mL / '+rate+'mL/h）</div>'+mixHtml+'</div>';
+  document.getElementById('ci-r').style.display='block';
+}
+addDrug(PRESETS[0]);addDrug(PRESETS[1]);
+const EMG=[
+  {n:'エピネフリン (CPA)',d:0.01,u:'mg/kg',c:1,r:'IV/気管内',conc:'1mg/mL (0.1%)'},
+  {n:'エピネフリン 低用量',d:0.005,u:'mg/kg',c:1,r:'IV',conc:'1mg/mL (0.1%)'},
+  {n:'アトロピン (徐脈・前投)',d:0.04,u:'mg/kg',c:0.5,r:'IV/IM',conc:'0.5mg/mL'},
+  {n:'リドカイン 2% (VT/VF)',d:2,u:'mg/kg',c:20,r:'IV ゆっくり',dog:true,conc:'20mg/mL (2%)'},
+  {n:'リドカイン 0.5% (VT/VF)',d:2,u:'mg/kg',c:5,r:'IV ゆっくり',dog:true,conc:'5mg/mL (0.5%)'},
+  {n:'ジアゼパム (病水)',d:0.5,u:'mg/kg',c:5,r:'IV/直腸内',conc:'5mg/mL'},
+  {n:'ミダゾラム (病水)',d:0.2,u:'mg/kg',c:5,r:'IV/IM/鼻腔内',conc:'5mg/mL'},
+  {n:'フロセミド (肺水腫)',d:2,u:'mg/kg',c:10,r:'IV',conc:'10mg/mL'},
+  {n:'デキサメタゾン (ショック)',d:1,u:'mg/kg',c:1,r:'IV',conc:'1mg/mL'},
+  {n:'マンニトール 0.5g/kg',d:0.5,u:'g/kg',c:0.2,r:'IV 30分',conc:'20%製剤 200mg/mL',isMannitol:true},
+];
+function calcEmg(){
+  const bw=+document.getElementById('eg-bw').value,sp=document.getElementById('eg-sp').value;
+  if(!bw){alert('体重を入力してください');return;}
+  let html='';
+  EMG.forEach(function(d){
+    if(d.dog&&sp!=='dog')return;
+    const tot=bw*d.d;
+    let valStr,sub2;
+    if(d.isMannitol){
+      const vol=tot/d.c;
+      const mlh=(vol/0.5).toFixed(0);
+      valStr=vol.toFixed(1)+' mL <span style="font-size:10px">(→ '+mlh+' mL/hプ30分)</span>';
+      sub2=tot.toFixed(2)+'g | '+d.conc;
+    } else {
+      const vol=tot/d.c;
+      valStr=vol.toFixed(2)+' mL';
+      sub2=tot.toFixed(3)+' '+d.u.replace('/kg','')+' | 濃度: '+d.conc;
+    }
+    html+='<div class="rrow"><div><div class="rn">'+d.n+'</div>'
+         +'<div class="rsub">'+d.d+' '+d.u+' | '+d.r+'</div></div>'
+         +'<div class="rval"><strong style="color:var(--danger)">'+valStr+'</strong>'
+         +'<small>'+sub2+'</small></div></div>';
+  });
+  document.getElementById('eg-rl').innerHTML=html;
+  document.getElementById('eg-r').style.display='block';
+}
+
+const PROTO={
+  'avoid-sp':[
+    {n:'CEZ',d:[20,20],u:'mg/kg',c:200,r:'IV',conc:'200mg/mL (1g/5mL溶解)'},
+    {n:'ブプレノルフィン',d:[0.01,0.01],u:'mg/kg',c:0.2,r:'IV/IM',conc:'0.2mg/mL'},
+    {n:'ミダゾラム',d:[0.2,0.2],u:'mg/kg',c:5,r:'IV/IM',conc:'5mg/mL'},
+    {n:'トラマドール',d:[4,4],u:'mg/kg',c:50,r:'IV/IM',conc:'50mg/mL'},
+    {n:'プロポフォール (導入)',d:[5,5],u:'mg/kg',c:10,r:'IV ゆっくり',conc:'10mg/mL',plus1:true},
+  ],
+  'neuter':[
+    {n:'CEZ or ABPC',d:[20,20],u:'mg/kg',c:200,r:'IV',conc:'200mg/mL (1g/5mL溶解)'},
+    {n:'ブプレノルフィン',d:[0.01,0.01],u:'mg/kg',c:0.2,r:'IV/IM',conc:'0.2mg/mL'},
+    {n:'プロポフォール (導入)',d:[5,5],u:'mg/kg',c:10,r:'IV ゆっくり',conc:'10mg/mL',plus1:true},
+  ],
+  'endo':[
+    {n:'CEZ or ABPC',d:[20,20],u:'mg/kg',c:200,r:'IV',conc:'200mg/mL (1g/5mL溶解)'},
+    {n:'ブトルファノール',d:[0.2,0.2],u:'mg/kg',c:5,r:'IV/IM',conc:'5mg/mL'},
+    {n:'アトロピン',d:[0.025,0.025],u:'mg/kg',c:0.5,r:'IV/IM',conc:'0.5mg/mL'},
+    {n:'プロポフォール (導入)',d:[5,5],u:'mg/kg',c:10,r:'IV ゆっくり',conc:'10mg/mL',plus1:true},
+  ],
+  'general':[
+    {n:'アセプロマジン',d:[0.02,0.05],u:'mg/kg',c:10,r:'IM/SC',conc:'10mg/mL',note:'最大3mg'},
+    {n:'ブトルファノール',d:[0.2,0.4],u:'mg/kg',c:5,r:'IM/IV',conc:'5mg/mL'},
+    {n:'ブプレノルフィン',d:[0.01,0.02],u:'mg/kg',c:0.2,r:'IM/IV',conc:'0.2mg/mL'},
+    {n:'メデトミジン',d:[0.01,0.04],u:'mg/kg',c:1,r:'IM/IV',conc:'1mg/mL'},
+    {n:'ミダゾラム',d:[0.2,0.4],u:'mg/kg',c:5,r:'IV/IM',conc:'5mg/mL'},
+    {n:'プロポフォール (導入)',d:[4,6],u:'mg/kg',c:10,r:'IV ゆっくり',conc:'10mg/mL'},
+    {n:'ケタミン',d:[5,10],u:'mg/kg',c:100,r:'IM',conc:'100mg/mL'},
+    {n:'アルファキサロン (猻)',d:[2,5],u:'mg/kg',c:10,r:'IV/IM',conc:'10mg/mL'},
+  ]
+};
+function calcAnes(){
+  const bw=+document.getElementById('an-bw').value,proto=document.getElementById('an-proto').value;
+  if(!bw){alert('体重を入力してください');return;}
+  let html='';
+  PROTO[proto].forEach(function(d){
+    const lo=bw*d.d[0],hi=bw*d.d[1];
+    let vs,ms;
+    if(d.plus1){const v=lo/d.c+1;vs=v.toFixed(2)+' mL';ms=lo.toFixed(2)+' mg + 1mL';}
+    else if(d.d[0]===d.d[1]){vs=(lo/d.c).toFixed(2)+' mL';ms=lo.toFixed(2)+' '+d.u.split('/')[0];}
+    else{vs=(lo/d.c).toFixed(2)+'–'+(hi/d.c).toFixed(2)+' mL';ms=lo.toFixed(2)+'–'+hi.toFixed(2)+' '+d.u.split('/')[0];}
+    html+='<div class="rrow"><div><div class="rn">'+d.n+'</div>'
+         +'<div class="rsub">'+d.u+' | '+d.r+(d.note?' | '+d.note:'')+(d.conc?' ・ 濃度:'+d.conc:'')+'</div></div>'
+         +'<div class="rval"><strong style="color:var(--warn)">'+vs+'</strong><small>'+ms+'</small></div></div>';
+  });
+  document.getElementById('an-rl').innerHTML=html;
+  document.getElementById('an-r').style.display='block';
+}
+
+const WBCC=[{id:'seg',l:'Seg',s:'分葉核好中球'},{id:'band',l:'Band',s:'桿状核好中球'},{id:'lymph',l:'Lymph',s:'リンパ球'},{id:'mono',l:'Mono',s:'単球'},{id:'eos',l:'Eos',s:'好酸球'},{id:'baso',l:'Baso',s:'好塩基球'}];
+const WC={};WBCC.forEach(function(c){WC[c.id]=0;});
+function initWBC(){
+  var g=document.getElementById('wbc-grid');g.innerHTML='';
+  WBCC.forEach(function(c){
+    var d=document.createElement('div');d.className='ci';
+    var minus=document.createElement('button');
+    minus.className='cb3 m';minus.textContent='-';
+    minus.dataset.id=c.id;minus.dataset.v='-1';
+    minus.addEventListener('click',function(){wbcA(this.dataset.id,-1);});
+    var plus=document.createElement('button');
+    plus.className='cb3 p';plus.textContent='+';
+    plus.dataset.id=c.id;plus.dataset.v='1';
+    plus.addEventListener('click',function(){wbcA(this.dataset.id,1);});
+    var cbs=document.createElement('div');cbs.className='cbs';
+    cbs.appendChild(minus);cbs.appendChild(plus);
+    var cn=document.createElement('div');cn.className='cn';cn.id='wn-'+c.id;cn.textContent='0';
+    var cl=document.createElement('div');cl.className='cl';
+    cl.innerHTML=c.l+'<br><span style="font-size:9px;opacity:.65">'+c.s+'</span>';
+    d.appendChild(cl);d.appendChild(cn);d.appendChild(cbs);
+    g.appendChild(d);
+  });
+}
+function wbcA(id,v){
+  WC[id]=Math.max(0,(WC[id]||0)+v);
+  document.getElementById('wn-'+id).textContent=WC[id];
+  const tot=Object.values(WC).reduce(function(a,b){return a+b;},0);
+  const el=document.getElementById('wbc-tot');
+  el.textContent=tot+' / 100';
+  el.style.color=tot===100?'var(--accent)':tot>100?'var(--danger)':'var(--text)';
+}
+function resetWBC(){WBCC.forEach(function(c){WC[c.id]=0;document.getElementById('wn-'+c.id).textContent='0';});document.getElementById('wbc-tot').textContent='0 / 100';document.getElementById('wbc-tot').style.color='var(--text)';document.getElementById('wbc-r').style.display='none';}
+function calcWBC(){
+  const tot=Object.values(WC).reduce(function(a,b){return a+b;},0);
+  if(!tot){alert('カウントを入力してください');return;}
+  let html='';
+  WBCC.forEach(function(c){const pct=(WC[c.id]/tot*100).toFixed(1);html+='<div class="rrow"><div><div class="rn">'+c.l+'</div><div class="rsub">'+c.s+'</div></div><div class="rval"><strong style="color:var(--at)">'+pct+'%</strong><small>'+WC[c.id]+'個</small></div></div>';});
+  html+='<div class="rrow" style="font-weight:800"><span>合計</span><span>'+tot+' 細胞</span></div>';
+  document.getElementById('wbc-rl').innerHTML=html;document.getElementById('wbc-r').style.display='block';
+}
+function calcRPI(){
+  const r=+document.getElementById('rp-r').value,p=+document.getElementById('rp-p').value,n=+document.getElementById('rp-n').value||45,mt=+document.getElementById('rp-mt').value;
+  if(!r||!p){alert('Retic%とPCVを入力してください');return;}
+  const rpi=(r*(p/n))/mt;
+  const txt=rpi>=2?'再生性貧血を示唆 (RPI ≥ 2)':rpi>=1?'境界域 (1 ≤ RPI < 2)':'非再生性貧血を示唆 (RPI < 1)';
+  sr('rp-r2',rpi.toFixed(2),txt+'　補正Retic: '+(r*p/n).toFixed(2)+'%');
+}
+function calcDER(){
+  const bw=+document.getElementById('nr-bw').value,fac=+document.getElementById('nr-fac').value;
+  if(!bw){alert('体重を入力してください');return;}
+  const rer=70*Math.pow(bw,0.75),der=rer*fac;
+  sr('nr-r',Math.round(der)+' <span style="font-size:16px">kcal/日</span>','RER: '+Math.round(rer)+' kcal/日　× 係数'+fac+' = DER: '+Math.round(der)+' kcal/日');
+}
+function calcLVID(){
+  const bw=+document.getElementById('lv-bw').value,d=+document.getElementById('lv-d').value;
+  if(!bw||!d){alert('体重とLVIDdを入力してください');return;}
+  // ACVIM 2019: LVIDdN = LVIDd(cm) / BW(kg)^0.294  カットオフ >=1.7
+  const n=d/Math.pow(bw,0.294);
+  const type=n>=1.7?'d':n>=1.5?'w':'g';
+  const txt=n>=1.7?'心拡大を示唉 (≥1.7)':n>=1.5?'境界域 (1.5–1.7)':'正常範囲内 (<1.5)';
+  sr('lv-r',n.toFixed(3),'LVIDd(cm) ÷ BW^0.294 = '+n.toFixed(3)+'　'+txt+' [ACVIM 2019]',type);
+}
+function calcCO(){
+  const bw=+document.getElementById('co-bw').value,hr=+document.getElementById('co-hr').value,sv=+document.getElementById('co-sv').value;
+  let bsa=+document.getElementById('co-bsa').value;
+  if(!hr||!sv){alert('心拍数とSVを入力してください');return;}
+  const co=hr*sv/1000;
+  if(!bsa&&bw)bsa=0.1*Math.pow(bw,0.667);
+  const ci=bsa?(co/bsa).toFixed(2)+' L/min/m²':'（BSA未入力）';
+  sr('co-r',co.toFixed(3)+' <span style="font-size:16px">L/min</span>','心係数 (CI): '+ci+(bsa?'　BSA: '+bsa.toFixed(3)+' m²':''));
+}
+function calcAge(){
+  const a=+document.getElementById('ag-a').value,sp=document.getElementById('ag-sp').value;
+  if(!a){alert('年齢を入力してください');return;}
+  let h,stage;
+  if(sp==='dog'){h=a<=1?15:a===2?24:24+(a-2)*5;stage=a<7?'成犬期':a<11?'シニア期':'高齢期';}
+  else{h=a<=1?15:a===2?24:24+(a-2)*4;stage=a<7?'成猫期':a<11?'シニア期':'高齢期';}
+  sr('ag-r','約 '+h+' <span style="font-size:16px">歳相当</span>',stage+' ('+a+'歳)');
+}
+initWBC();
+
+// ── 低脂肪食計算 ──────────────────────────────────────────────
+function lfSyncFood(){
+  var hw=parseFloat(document.getElementById('lf-hw').value)||0;
+  document.getElementById('lf-fw').value=Math.max(0,100-hw);
+}
+function lfSyncHome(){
+  var fw=parseFloat(document.getElementById('lf-fw').value)||0;
+  document.getElementById('lf-hw').value=Math.max(0,100-fw);
+}
+
+// 食材データ (per 100g): [kcal, protein_g, fat_g, ca_mg, p_mg, k_mg, na_mg, mg_mg, fe_mg, cu_mg, zn_mg, se_ug, vitA_ug, vitD_ug, vitE_mg, vitB1_mg, vitB2_mg, niacin_mg, vitB6_mg, folate_ug, vitB12_ug]
+var LF_FOODS = {
+  potato: {name:'\u3058\u3083\u304c\u3044\u3082\u84b8\u3057', kcal:84, water:78.1, pro:1.5, fat:0.1, ca:2, p:23, k:330, na:1, mg:20, fe:0.3, cu:0.08, zn:0.2, mn:0.13, se:0, vitA:0, vitD:0, vitE:0.1, vitB1:0.05, vitB2:0.02, niacin:0.8, vitB6:0.18, folate:22, vitB12:0},
+  rice:   {name:'\u7c73(\u3054\u306f\u3093)', kcal:168, water:60.0, pro:2.5, fat:0.3, ca:3, p:34, k:29, na:1, mg:7, fe:0.1, cu:0.10, zn:0.6, mn:0.35, se:1, vitA:0, vitD:0, vitE:0, vitB1:0.02, vitB2:0.01, niacin:0.2, vitB6:0.02, folate:3, vitB12:0},
+  sweet:  {name:'\u3055\u3064\u307e\u3044\u3082\u84b8\u3057', kcal:134, water:65.6, pro:1.2, fat:0.2, ca:36, p:47, k:480, na:11, mg:24, fe:0.6, cu:0.17, zn:0.2, mn:0.41, se:0, vitA:2, vitD:0, vitE:1.5, vitB1:0.11, vitB2:0.04, niacin:0.8, vitB6:0.27, folate:50, vitB12:0},
+  sasami: {name:'\u30b5\u30b5\u30df\u8304\u3067', kcal:125, water:70.6, pro:27.3, fat:1.0, ca:4, p:220, k:350, na:29, mg:32, fe:0.3, cu:0.03, zn:0.7, mn:0.01, se:22, vitA:3, vitD:0, vitE:0, vitB1:0.09, vitB2:0.12, niacin:10.5, vitB6:0.58, folate:7, vitB12:0.1},
+};
+// RC消化器サポート (per 100g乾物)
+var LF_RC = {
+  dry:    {name:'RC\u30c9\u30e9\u30a4', kcal:347, kcal_dm:347, water:9.5, pro:22, fat:7, ca:1100, p:800, k:600, na:410, mg:80, fe:16.5, cu:1.5, zn:17.1, mn:7.4, se:32, vitA_iu:18000, vitD_iu:1000, vitE_mg:55.2, vitB1:0.48, vitB2:0.76, niacin:5.02, vitB6:0.94, folate:0.10, vitB12:0.008},
+  wet:    {name:'RC\u30a6\u30a7\u30c3\u30c8', kcal:91,  kcal_dm:350, water:74, pro:7.5, fat:1.7, ca:200, p:160, k:160, na:150, mg:20, fe:4, cu:0.4, zn:2.5, mn:0.4, se:30, vitA_iu:40000, vitD_iu:200, vitE_mg:57.7, vitB1:0.77, vitB2:1.15, niacin:5.77, vitB6:0.38, folate:0.12, vitB12:0.015},
+  liquid: {name:'RC\u30ea\u30ad\u30c3\u30c9', kcal:105, kcal_dm:663, water:84.2, pro:9, fat:2, ca:200, p:180, k:210, na:100, mg:20, fe:2.9, cu:0.26, zn:4.2, mn:0.17, se:10, vitA_iu:3700, vitD_iu:224, vitE_mg:114.6, vitB1:0.70, vitB2:1.77, niacin:12.66, vitB6:0.63, folate:0.51, vitB12:0.010},
+};
+// AAFCO 成犬最小値 (乾物%ベース, 4000kcal/kgDM換算で mg/kg -> g/100g)
+var AAFCO = {
+  pro:18, fat:5.5, ca:0.05, p:0.4, k:0.6, na:0.08, mg:0.06,
+  fe_mgkg:40, cu_mgkg:7.3, zn_mgkg:80, mn_mgkg:5, se_mgkg:0.35,
+  vitA_iukg:5000, vitD_iukg:500, vitE_iukg:50,
+  vitB1_mgkg:2.25, vitB2_mgkg:5.2, niacin_mgkg:13.6, vitB6_mgkg:1.5, folate_mgkg:0.216, vitB12_mgkg:0.028
+};
+
+function calcLowfat(){
+  var bw=parseFloat(document.getElementById('lf-bw').value)||0;
+  if(!bw){alert('\u4f53\u91cd\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');return;}
+  var fac=parseFloat(document.getElementById('lf-fac').value)||1.5;
+  var rer=70*Math.pow(bw,0.75), der=rer*fac;
+  var hwPct=parseFloat(document.getElementById('lf-hw').value)||50;
+  var fwPct=100-hwPct;
+  var vegKey=document.getElementById('lf-veg').value;
+  var vegPct=parseFloat(document.getElementById('lf-vp').value)||50;
+  var cpPct=parseFloat(document.getElementById('lf-cp').value)||50;
+  var fdPct=parseFloat(document.getElementById('lf-fd').value)||100;
+  var fw2Pct=parseFloat(document.getElementById('lf-fw2').value)||0;
+  var flPct=parseFloat(document.getElementById('lf-fl').value)||0;
+
+  // validate
+  if(Math.abs(vegPct+cpPct-100)>1){alert('\u624b\u4f5c\u308a\u98df\u30d9\u30fc\u30b9\u306e\u5272\u5408\u306e\u5408\u8a08\u304c100%\u306b\u306a\u308b\u3088\u3046\u306b\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');return;}
+  if(Math.abs(fdPct+fw2Pct+flPct-100)>1){alert('RC\u30bf\u30a4\u30d7\u5225\u5272\u5408\u306e\u5408\u8a08\u304c100%\u306b\u306a\u308b\u3088\u3046\u306b\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044');return;}
+
+  var homeKcal=der*(hwPct/100), foodKcal=der*(fwPct/100);
+
+  // 手作り食 各食材のkcalと量
+  var vegData=LF_FOODS[vegKey];
+  var vegKcal=homeKcal*(vegPct/100), vegG=vegKcal/vegData.kcal*100;
+  var cpKcal=homeKcal*(cpPct/100), cpG=cpKcal/LF_FOODS.sasami.kcal*100;
+
+  // RC各タイプ
+  var dryKcal=foodKcal*(fdPct/100), wetKcal=foodKcal*(fw2Pct/100), liqKcal=foodKcal*(flPct/100);
+  var dryG=fdPct>0?dryKcal/LF_RC.dry.kcal*100:0;
+  var wetG=fw2Pct>0?wetKcal/LF_RC.wet.kcal*100:0;
+  var liqMl=flPct>0?liqKcal/LF_RC.liquid.kcal*100:0;
+
+  // 栄養素計算 (各食材のg数 * 成分/100g)
+  function N(food,key){return food[key]||0;}
+  function calcNut(g,food){
+    var r={};
+    ['pro','fat','ca','p','k','na','mg','fe','cu','zn','mn','se','vitA','vitD','vitE','vitB1','vitB2','niacin','vitB6','folate','vitB12'].forEach(function(k){r[k]=(N(food,k)*g/100);});
+    return r;
+  }
+  function addN(a,b){var r={};Object.keys(a).forEach(function(k){r[k]=(a[k]||0)+(b[k]||0);});return r;}
+
+  var nVeg=calcNut(vegG,vegData);
+  var nCp=calcNut(cpG,LF_FOODS.sasami);
+
+  // RC nutrients per g of as-fed
+  function rcNut(g,rc){
+    var r={pro:rc.pro*g/100, fat:rc.fat*g/100, ca:rc.ca/1000*g/100, p:rc.p/1000*g/100,
+           k:rc.k/1000*g/100, na:rc.na/1000*g/100, mg:rc.mg/1000*g/100,
+           fe:rc.fe/1000*g/100, cu:rc.cu/1000*g/100, zn:rc.zn/1000*g/100, mn:rc.mn/1000*g/100,
+           se:rc.se/1000000*g/100,
+           vitA:rc.vitA_iu*g/100, vitD:rc.vitD_iu*g/100, vitE:rc.vitE_mg*g/100,
+           vitB1:rc.vitB1/1000*g/100, vitB2:rc.vitB2/1000*g/100, niacin:rc.niacin/1000*g/100,
+           vitB6:rc.vitB6/1000*g/100, folate:rc.folate/1000*g/100, vitB12:rc.vitB12/1000*g/100};
+    return r;
+  }
+  var nDry=rcNut(dryG,LF_RC.dry);
+  var nWet=rcNut(wetG,LF_RC.wet);
+  var nLiq=rcNut(liqMl,LF_RC.liquid);
+
+  var total=addN(addN(addN(nVeg,nCp),nDry),addN(nWet,nLiq));
+  var totalG=vegG+cpG+dryG+wetG+liqMl;
+
+  // DM basis for AAFCO comparison (乾物換算)
+  var waterG=N(vegData,'water')*vegG/100+N(LF_FOODS.sasami,'water')*cpG/100
+             +LF_RC.dry.water*dryG/100+LF_RC.wet.water*wetG/100+LF_RC.liquid.water*liqMl/100;
+  var dmG=totalG-waterG;
+  var kcalPerKgDm=der/(dmG/1000);  // kcal/kgDM
+
+  // Summary HTML
+  var sumHtml='<div class="rrow"><span>\u5fc5\u8981\u30a8\u30cd\u30eb\u30ae\u30fc</span><span class="rval"><strong style="color:var(--gd)">RER '+Math.round(rer)+' / DER '+Math.round(der)+' kcal/\u65e5</strong></span></div>'
+    +'<div class="rrow"><span>\u624b\u4f5c\u308a\u98df</span><span class="rval"><strong style="color:var(--gd)">'+homeKcal.toFixed(0)+' kcal</strong></span></div>'
+    +'<div class="rrow"><span>RC\u6d88\u5316\u5668\u30b5\u30dd\u30fc\u30c8</span><span class="rval"><strong style="color:var(--gd)">'+foodKcal.toFixed(0)+' kcal</strong></span></div>';
+  document.getElementById('lf-summary').innerHTML=sumHtml;
+
+  // Amounts HTML
+  var amtHtml='';
+  if(vegG>0) amtHtml+='<div class="rrow"><span>'+vegData.name+'</span><span class="rval"><strong>'+vegG.toFixed(1)+' g</strong><small>'+vegKcal.toFixed(0)+' kcal</small></span></div>';
+  if(cpG>0)  amtHtml+='<div class="rrow"><span>'+LF_FOODS.sasami.name+'</span><span class="rval"><strong>'+cpG.toFixed(1)+' g</strong><small>'+cpKcal.toFixed(0)+' kcal</small></span></div>';
+  if(dryG>0) amtHtml+='<div class="rrow"><span>'+LF_RC.dry.name+'</span><span class="rval"><strong>'+dryG.toFixed(1)+' g</strong><small>'+dryKcal.toFixed(0)+' kcal</small></span></div>';
+  if(wetG>0) amtHtml+='<div class="rrow"><span>'+LF_RC.wet.name+'</span><span class="rval"><strong>'+wetG.toFixed(1)+' g</strong><small>'+wetKcal.toFixed(0)+' kcal</small></span></div>';
+  if(liqMl>0)amtHtml+='<div class="rrow"><span>'+LF_RC.liquid.name+'</span><span class="rval"><strong>'+liqMl.toFixed(1)+' mL</strong><small>'+liqKcal.toFixed(0)+' kcal</small></span></div>';
+  amtHtml+='<div class="rrow" style="font-weight:700"><span>\u5408\u8a08</span><span class="rval"><strong>'+totalG.toFixed(1)+' g/mL</strong><small>'+der.toFixed(0)+' kcal</small></span></div>';
+  document.getElementById('lf-amounts').innerHTML=amtHtml;
+
+  // Nutrients vs AAFCO
+  // Convert total nutrients to per kgDM basis for minerals/vitamins
+  var kgDm=dmG/1000;
+  function pct(val,ref){return ref>0?(val/ref*100).toFixed(0)+'%':'—';}
+  function nutRow(label, val, unit, ref, refUnit, ok){
+    var color=ok?'var(--gd)':'var(--danger)';
+    var mark=ok?'&#x2714;':'&#x26A0;';
+    return '<div class="rrow"><div><div class="rn">'+label+'</div>'
+      +'<div class="rsb">AAFCO\u57fa\u6e96: '+ref+' '+refUnit+'</div></div>'
+      +'<div class="rval"><strong style="color:'+color+'">'+val+' '+unit+'</strong>'
+      +'<small>'+mark+' '+pct(parseFloat(val),ref)+'</small></div></div>';
+  }
+
+  var proG=total.pro, fatG=total.fat;
+  var proPct=kgDm>0?proG/dmG*100:0, fatPct=kgDm>0?fatG/dmG*100:0;
+  var caG=total.ca*1000, pG=total.p*1000;
+
+  var nutHtml='';
+  nutHtml+=nutRow('\u30bf\u30f3\u30d1\u30af\u8cea',proPct.toFixed(1),'% DM',18,'% DM',proPct>=18);
+  nutHtml+=nutRow('\u8102;&#x8CEA;',fatPct.toFixed(1),'% DM',5.5,'% DM',fatPct>=5.5);
+  nutHtml+=nutRow('\u8102;&#x8CEA; (\u4F4E\u8102;&#x80AA;\u76EE;&#x6A19;)',fatPct.toFixed(1),'%',7,'% \u4ee5\u4e0b;',fatPct<=7);
+  nutHtml+=nutRow('\u30ab\u30eb\u30b7\u30a6\u30e0',(caG/dmG).toFixed(3),'% DM',0.05,'% DM',caG/dmG*100>=0.05);
+  nutHtml+=nutRow('\u30ea\u30f3',(pG/dmG).toFixed(3),'% DM',0.4,'% DM',pG/dmG*100>=0.4);
+  nutHtml+=nutRow('\u30ab\u30ea\u30a6\u30e0',(total.k*1000/dmG).toFixed(3),'% DM',0.6,'% DM',total.k*1000/dmG*100>=0.6);
+  nutHtml+=nutRow('\u30ca\u30c8\u30ea\u30a6\u30e0',(total.na*1000/dmG).toFixed(3),'% DM',0.08,'% DM',total.na*1000/dmG*100>=0.08);
+  nutHtml+=nutRow('\u9244',(total.fe/kgDm).toFixed(1),'mg/kg',40,'mg/kg',total.fe/kgDm>=40);
+  nutHtml+=nutRow('\u9285',(total.cu/kgDm).toFixed(2),'mg/kg',7.3,'mg/kg',total.cu/kgDm>=7.3);
+  nutHtml+=nutRow('\u4e9c\u9375',(total.zn/kgDm).toFixed(1),'mg/kg',80,'mg/kg',total.zn/kgDm>=80);
+  var vitATotal=total.vitA;
+  nutHtml+=nutRow('\u30d3\u30bf\u30df\u30f3A',(vitATotal/kgDm).toFixed(0),'IU/kg',5000,'IU/kg',vitATotal/kgDm>=5000);
+  nutHtml+=nutRow('\u30d3\u30bf\u30df\u30f3D',(total.vitD/kgDm).toFixed(0),'IU/kg',500,'IU/kg',total.vitD/kgDm>=500);
+  nutHtml+=nutRow('\u30d3\u30bf\u30df\u30f3E',(total.vitE/kgDm).toFixed(1),'mg/kg',50,'IU/kg',total.vitE/kgDm>=50);
+  nutHtml+=nutRow('\u30d3\u30bf\u30df\u30f3B1',(total.vitB1*1000/kgDm).toFixed(2),'mg/kg',2.25,'mg/kg',total.vitB1*1000/kgDm>=2.25);
+  nutHtml+=nutRow('\u30d3\u30bf\u30df\u30f3B2',(total.vitB2*1000/kgDm).toFixed(2),'mg/kg',5.2,'mg/kg',total.vitB2*1000/kgDm>=5.2);
+  nutHtml+=nutRow('\u30ca\u30a4\u30a2\u30b7\u30f3',(total.niacin*1000/kgDm).toFixed(1),'mg/kg',13.6,'mg/kg',total.niacin*1000/kgDm>=13.6);
+  nutHtml+=nutRow('\u30d3\u30bf\u30df\u30f3B6',(total.vitB6*1000/kgDm).toFixed(2),'mg/kg',1.5,'mg/kg',total.vitB6*1000/kgDm>=1.5);
+  nutHtml+=nutRow('\u8449\u9178',(total.folate*1000/kgDm).toFixed(3),'mg/kg',0.216,'mg/kg',total.folate*1000/kgDm>=0.216);
+  nutHtml+=nutRow('\u30d3\u30bf\u30df\u30f3B12',(total.vitB12*1000/kgDm).toFixed(4),'mg/kg',0.028,'mg/kg',total.vitB12*1000/kgDm>=0.028);
+
+  document.getElementById('lf-nutrients').innerHTML=nutHtml;
+  document.getElementById('lf-result').style.display='block';
+}
+
+</script>
+
+<div class="tp" id="t-lowfat">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#f0faf0">&#x1F96C;</div><div><h2>&#x4F4E;&#x8102;&#x80AA;&#x98DF; &#x8A08;&#x7B97;</h2><p>&#x624B;&#x4F5C;&#x308A;&#x98DF; + RC &#x6D88;&#x5316;&#x5668;&#x30B5;&#x30DD;&#x30FC;&#x30C8;</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="lf-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x4FC2;&#x6570;</label><select id="lf-fac">
+          <option value="1.0">&times;1.0 &#x7D76;&#x98DF;&#x30FB;&#x91CD;&#x7B43;</option>
+          <option value="1.2">&times;1.2 &#x6E1B;&#x91CF;&#x4E2D;</option>
+          <option value="1.3">&times;1.3 &#x9AD8;&#x9F62;</option>
+          <option value="1.4">&times;1.4 &#x53BB;&#x52E2;&#x6E08;&#x307F;</option>
+          <option value="1.5" selected>&times;1.5 &#x5165;&#x9662;&#x30FB;&#x8853;&#x5F8C;</option>
+          <option value="1.6">&times;1.6 &#x672A;&#x53BB;&#x52E2;&#x6210;&#x4F53;</option>
+        </select></div>
+      </div>
+      <div class="sep">&#x624B;&#x4F5C;&#x308A;&#x98DF;&#x30BB;&#x30C3;&#x30C8; &#xFF08;&#x5408;&#x8A08;&#x304C;100%&#x306B;&#x306A;&#x308B;&#x3088;&#x3046;&#x306B;&#xFF09;</div>
+      <div style="background:var(--bg);border-radius:var(--rads);padding:10px;display:flex;flex-direction:column;gap:8px">
+        <div class="r2">
+          <div class="f"><label>&#x624B;&#x4F5C;&#x308A;&#x98DF; &#x5272;&#x5408; (%)</label><input type="number" id="lf-hw" placeholder="50" step="5" min="0" max="100" inputmode="numeric" oninput="lfSyncFood()"></div>
+          <div class="f"><label>RC&#x30B5;&#x30DD;&#x30FC;&#x30C8; &#x5272;&#x5408; (%)</label><input type="number" id="lf-fw" placeholder="50" step="5" min="0" max="100" inputmode="numeric" oninput="lfSyncHome()"></div>
+        </div>
+        <div class="sep">&#x624B;&#x4F5C;&#x308A;&#x98DF;&#x30D9;&#x30FC;&#x30B9; &#xFF08;&#x5408;&#x8A08;100%&#xFF09;</div>
+        <div class="r2">
+          <div class="f"><label>&#x4E3B;&#x98DF;&#x6750; &#x9078;&#x629E;</label><select id="lf-veg">
+            <option value="potato">&#x3058;&#x3083;&#x304C;&#x3044;&#x3082; &#x84B8;&#x3057;</option>
+            <option value="rice">&#x7C73;</option>
+            <option value="sweet">&#x3055;&#x3064;&#x307E;&#x3044;&#x3082;</option>
+          </select></div>
+          <div class="f"><label>&#x4E3B;&#x98DF;&#x6750; &#x5272;&#x5408; (%)</label><input type="number" id="lf-vp" value="50" step="5" min="0" max="100" inputmode="numeric"></div>
+        </div>
+        <div class="r2">
+          <div class="f"><label>&#x30B5;&#x30B5;&#x30DF; &#x8304;&#x3067; &#x5272;&#x5408; (%)</label><input type="number" id="lf-cp" value="50" step="5" min="0" max="100" inputmode="numeric"></div>
+          <div></div>
+        </div>
+        <div class="sep">RC&#x6D88;&#x5316;&#x5668;&#x30B5;&#x30DD;&#x30FC;&#x30C8; &#x30BF;&#x30A4;&#x30D7;&#x5225;&#x5272;&#x5408; &#xFF08;&#x5408;&#x8A08;100%&#xFF09;</div>
+        <div class="r3">
+          <div class="f"><label>&#x30C9;&#x30E9;&#x30A4; (%)</label><input type="number" id="lf-fd" value="100" step="10" min="0" max="100" inputmode="numeric"></div>
+          <div class="f"><label>&#x30A6;&#x30A7;&#x30C3;&#x30C8; (%)</label><input type="number" id="lf-fw2" value="0" step="10" min="0" max="100" inputmode="numeric"></div>
+          <div class="f"><label>&#x30EA;&#x30AD;&#x30C3;&#x30C9; (%)</label><input type="number" id="lf-fl" value="0" step="10" min="0" max="100" inputmode="numeric"></div>
+        </div>
+      </div>
+      <button class="btn bg" onclick="calcLowfat()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div id="lf-result" style="display:none">
+        <div class="rb rbg" style="margin-top:0">
+          <div class="rl">1&#x65E5;&#x5FC5;&#x8981;&#x91CF;</div>
+          <div id="lf-summary"></div>
+        </div>
+        <div class="rb" style="background:#f8f8f5;margin-top:8px;padding:10px 12px">
+          <div class="rl" style="color:var(--muted);margin-bottom:6px">&#x5404;&#x98DF;&#x6750;&#x91CF;</div>
+          <div id="lf-amounts"></div>
+        </div>
+        <div class="rb" style="background:#f8f8f5;margin-top:8px;padding:10px 12px">
+          <div class="rl" style="color:var(--muted);margin-bottom:6px">&#x6804;&#x990A;&#x7D20; (AAFCO&#x6210;&#x72AC;&#x6700;&#x5C0F;&#x57FA;&#x6E96;&#x3068;&#x6BD4;&#x8F03;)</div>
+          <div id="lf-nutrients"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
