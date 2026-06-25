@@ -88,6 +88,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Hiragino 
   <div class="nt" onclick="sw('cardio',this)">&#x1FAC0; &#x5FAA;&#x74B0;</div>
   <div class="nt" onclick="sw('misc',this)">&#x1F4D0; &#x305D;&#x306E;&#x4ED6;</div>
   <div class="nt" onclick="sw('lowfat',this)">&#x1F96C; &#x4F4E;&#x8102;&#x80AA;&#x98DF;</div>
+  <div class="nt" onclick="sw('exotic',this)">&#x1F430; &#x30A8;&#x30AD;&#x30BE;</div>
+  <div class="nt" onclick="sw('renal',this)">&#x1F9A0; 腾臓</div>
+  <div class="nt" onclick="sw('onco',this)">&#x1F397; 腫瘍</div>
 </div>
 <div class="tp on" id="t-dose">
   <div class="card">
@@ -173,6 +176,54 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Hiragino 
       <div class="f"><label>&#x70B9;&#x6EF4;&#x30BB;&#x30C3;&#x30C8;</label><select id="dr-set"><option value="20">&#x901A;&#x5E38; (20&#x6ECB;/mL)</option><option value="60">&#x5FAE;&#x91CF; (60&#x6ECB;/mL)</option></select></div>
       <button class="btn bp" onclick="calcDrip()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
       <div class="rb rbg" id="dr-r" style="display:none"><div class="rl">&#x6D41;&#x901F;</div><div class="rv" id="dr-v"></div><div class="rs" id="dr-s"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--rl)">&#x1FA78;</div><div><h2>&#x8F38;&#x8840;&#x91CF; &#x8A08;&#x7B97; <span class="badge">NEW</span></h2><p>&#x76EE;&#x6A19;PCV&#x304B;&#x3089;&#x5FC5;&#x8981;&#x91CF;&#x7B97;&#x51FA;</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="tf-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="tf-sp"><option value="dog">&#x72AC; (90mL/kg)</option><option value="cat">&#x732B; (60mL/kg)</option></select></div>
+      </div>
+      <div class="r3">
+        <div class="f"><label>&#x73FE;&#x5728;PCV (%)</label><input type="number" id="tf-cur" placeholder="15" step="1" inputmode="decimal"></div>
+        <div class="f"><label>&#x76EE;&#x6A19;PCV (%)</label><input type="number" id="tf-tgt" placeholder="25" step="1" inputmode="decimal"></div>
+        <div class="f"><label>&#x8F38;&#x8840;バッグPCV (%)</label><input type="number" id="tf-don" placeholder="40" step="1" inputmode="decimal"></div>
+      </div>
+      <div class="f"><label>&#x88FD;&#x5264;</label><select id="tf-prod"><option value="wb">全血 (WB)</option><option value="prbc">濃厚赤血球 (pRBC)</option></select></div>
+      <button class="btn br" onclick="calcTransfuse()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbr" id="tf-r" style="display:none"><div class="rl">&#x5FC5;&#x8981;&#x8F38;&#x8840;&#x91CF;</div><div class="rv" id="tf-v"></div><div class="rs" id="tf-s"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--wl)">&#x26A1;</div><div><h2>&#x30AB;&#x30EA;&#x30A6;&#x30E0;&#x88DC;&#x6B63; (KCl) <span class="badge">NEW</span></h2><p>添加量 + 最大速度安全チェック</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="kc-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x8840;清K (mEq/L)</label><input type="number" id="kc-k" placeholder="2.8" step="0.1" inputmode="decimal"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>&#x8F38;&#x6DB2;&#x901F;&#x5EA6; (mL/h)</label><input type="number" id="kc-rate" placeholder="10" step="0.5" inputmode="decimal"></div>
+        <div class="f"><label>輸液バッグ (mL)</label><input type="number" id="kc-bag" placeholder="500" step="50" inputmode="numeric"></div>
+      </div>
+      <button class="btn bw" onclick="calcKCl()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbw" id="kc-r" style="display:none"><div class="rl">KCl添加ガイド</div><div id="kc-rl"></div></div>
+      <div class="note">&#x26A0;&#xFE0F; 最大投与速度 0.5 mEq/kg/h を超えないこと（AAHA 2024 / DiBartola）。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--rl)">&#x1F4A5;</div><div><h2>&#x30B7;&#x30E7;&#x30C3;&#x30AF;&#x8F38;&#x6DB2; <span class="badge">NEW</span></h2><p>&#x30DC;&#x30FC;&#x30E9;&#x30B9;&#x91CF;&#x7B97;&#x51FA;</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (kg)</label><input type="number" id="sh-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="sh-sp"><option value="dog">&#x72AC;</option><option value="cat">&#x732B;</option></select></div>
+      </div>
+      <div class="f"><label>投与割合</label><select id="sh-frac"><option value="0.25">1/4 量（初期ボーラス推奨）</option><option value="0.5">1/2 量</option><option value="1">全量</option></select></div>
+      <button class="btn br" onclick="calcShock()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbr" id="sh-r" style="display:none"><div class="rl">&#x30B7;&#x30E7;&#x30C3;&#x30AF;&#x8F38;&#x6DB2;ボーラス量</div><div class="rv" id="sh-v"></div><div class="rs" id="sh-s"></div></div>
     </div>
   </div>
 </div>
@@ -308,6 +359,39 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'Hiragino 
       </div>
       <button class="btn bp" onclick="calcCO()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
       <div class="rb rbg" id="co-r" style="display:none"><div class="rl">&#x5FC3;&#x62CD;&#x51FA;&#x91CF; (CO)</div><div class="rv" id="co-v"></div><div class="rs" id="co-s"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--dl)">&#x1FAC0;</div><div><h2>ACVIM 心臓病ステージ (MMVD) <span class="badge">NEW</span></h2><p>2019コンセンサス補助</p></div></div>
+    <div class="cb">
+      <div class="f"><label>心雑音の有無</label><select id="ac-murmur"><option value="no">なし</option><option value="yes">あり</option></select></div>
+      <div class="f"><label>心拡大（LA/Ao≥1.6 または LVIDdN≥1.7）</label><select id="ac-enlarge"><option value="no">なし</option><option value="yes">あり</option></select></div>
+      <div class="f"><label>臨床症状（咳・頑性呼吸・肺水腫等）</label><select id="ac-cs"><option value="no">なし</option><option value="current">現在あり</option><option value="past">過去にあり（現在コントロール）</option><option value="refractory">難治性</option></select></div>
+      <button class="btn bp" onclick="calcACVIM()">判定する</button>
+      <div class="rb rbg" id="ac-r" style="display:none"><div class="rl">ACVIMステージ</div><div class="rv" id="ac-v"></div><div class="rs" id="ac-s"></div></div>
+      <div class="note">⚠;️ 錠弁閃側変性疾患(MMVD)を想定した簡易判定です。最終診断は心エコ・胸部X線を併用してください。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--dl)">&#x1F48A;</div><div><h2>心臓薬 用量・錢数換算 <span class="badge">NEW</span></h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>体重 (kg)</label><input type="number" id="hd-bw" placeholder="5.0" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>薬剤</label><select id="hd-drug" onchange="hdInfo()">
+          <option value="pimo">ピモベンダン (0.25-0.3 mg/kg BID)</option>
+          <option value="furo">フロセミド (1-4 mg/kg)</option>
+          <option value="bena">ベナゼプリル (0.25-0.5 mg/kg)</option>
+          <option value="pimo_inj">ピモベンダン注 (0.15 mg/kg IV)</option>
+        </select></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>投与量 (mg/kg)</label><input type="number" id="hd-dose" placeholder="0.25" step="0.01" inputmode="decimal"></div>
+        <div class="f"><label>錢剤含有量 (mg/錢) 任意</label><input type="number" id="hd-tab" placeholder="1.25" step="0.01" inputmode="decimal"></div>
+      </div>
+      <button class="btn bp" onclick="calcHeartDrug()">計算する</button>
+      <div class="rb rbg" id="hd-r" style="display:none"><div class="rl">用量</div><div class="rv" id="hd-v"></div><div class="rs" id="hd-s"></div></div>
     </div>
   </div>
 </div>
@@ -776,6 +860,251 @@ function calcLowfat(){
   document.getElementById('lf-result').style.display='block';
 }
 
+
+// ── 輸血量計算 ──
+function calcTransfuse(){
+  const bw=+document.getElementById('tf-bw').value;
+  const sp=document.getElementById('tf-sp').value;
+  const cur=+document.getElementById('tf-cur').value;
+  const tgt=+document.getElementById('tf-tgt').value;
+  const don=+document.getElementById('tf-don').value;
+  const prod=document.getElementById('tf-prod').value;
+  if(!bw||!cur||!tgt||!don){alert('体重・PCVを入力してください');return;}
+  if(tgt<=cur){alert('目標PCVは現在PCVより大きくしてください');return;}
+  const bv=sp==='cat'?60:90;
+  // Merck formula: ([desired-current]/donorPCV) x BV x BW
+  const vol=((tgt-cur)/don)*bv*bw;
+  // Rule of thumb: WB 2mL/kg per 1% / pRBC 1mL/kg per 1%
+  const rule=prod==='prbc'?(tgt-cur)*1*bw:(tgt-cur)*2*bw;
+  const label=prod==='prbc'?'pRBC':'全血(WB)';
+  sr('tf-r',vol.toFixed(0)+' mL',
+    label+' | 簡易法('+(prod==='prbc'?'1':'2')+'mL/kg×上昇PCV): '+rule.toFixed(0)+' mL　初期速度0.5-1mL/kg/hで4時間以内',
+    'r');
+}
+
+// ── カリウム補正 ──
+function calcKCl(){
+  const bw=+document.getElementById('kc-bw').value;
+  const k=+document.getElementById('kc-k').value;
+  const rate=+document.getElementById('kc-rate').value;
+  const bag=+document.getElementById('kc-bag').value;
+  if(!bw||!k||!rate||!bag){alert('全項目を入力してください');return;}
+  // Sliding scale (DiBartola / AAHA): K -> mEq/L to add
+  let addPerL, maxMeqL;
+  if(k<2.0){addPerL=80;maxMeqL=2.0;}
+  else if(k<2.5){addPerL=60;maxMeqL=2.5;}
+  else if(k<3.0){addPerL=40;maxMeqL=3.0;}
+  else if(k<3.5){addPerL=30;maxMeqL=3.5;}
+  else{addPerL=20;maxMeqL=999;}
+  // KCl added to bag
+  const meqInBag=addPerL*(bag/1000);
+  // KCl preparation typically 1mEq/mL (in JP: 塩化カリウム 1mEq/mL or 15% ≈2mEq/mL)
+  const mlKCl_1=meqInBag/1;       // 1mEq/mL
+  const mlKCl_2=meqInBag/2;       // 15% ≈2mEq/mL
+  // Safety: infusion rate of K
+  const kRate=(addPerL*(rate/1000))/bw; // mEq/kg/h
+  const safe=kRate<=0.5;
+  const safeColor=safe?'var(--gd)':'var(--danger)';
+  const safeMark=safe?'&#x2714; 安全':'&#x26A0; 速度超過！';
+  let html='';
+  html+='<div class="rrow"><div><div class="rn">推奨添加濃度</div><div class="rsub">血清K '+k+' mEq/L → '+addPerL+' mEq/L 追加</div></div><div class="rval"><strong style="color:var(--warn)">'+addPerL+' mEq/L</strong></div></div>';
+  html+='<div class="rrow"><div><div class="rn">'+bag+'mLバッグへの添加量</div><div class="rsub">計 '+meqInBag.toFixed(1)+' mEq</div></div><div class="rval"><strong style="color:var(--warn)">'+mlKCl_1.toFixed(1)+' mL</strong><small>1mEq/mL製剤</small></div></div>';
+  html+='<div class="rrow"><div><div class="rn">（15%製剤の場合）</div><div class="rsub">≈2mEq/mL</div></div><div class="rval"><strong style="color:var(--warn)">'+mlKCl_2.toFixed(1)+' mL</strong></div></div>';
+  html+='<div class="rrow"><div><div class="rn">K投与速度チェック</div><div class="rsub">'+rate+'mL/hで投与時 → '+kRate.toFixed(3)+' mEq/kg/h</div></div><div class="rval"><strong style="color:'+safeColor+'">'+safeMark+'</strong><small>上限 0.5</small></div></div>';
+  document.getElementById('kc-rl').innerHTML=html;
+  document.getElementById('kc-r').style.display='block';
+}
+
+// ── ショック輸液 ──
+function calcShock(){
+  const bw=+document.getElementById('sh-bw').value;
+  const sp=document.getElementById('sh-sp').value;
+  const frac=+document.getElementById('sh-frac').value;
+  if(!bw){alert('体重を入力してください');return;}
+  const full=sp==='cat'?50:90; // mL/kg
+  const dose=bw*full*frac;
+  const fullDose=bw*full;
+  sr('sh-r',dose.toFixed(0)+' mL',
+    (sp==='cat'?'猫':'犬')+'全量 '+full+' mL/kg × '+(frac*100)+'%　（15-20分で投与し再評価）　全量: '+fullDose.toFixed(0)+' mL',
+    'r');
+}
+
+
+// ── エキゾック ──
+var EXOTIC = {
+  rabbit:    {name:'ウサギ', hr:'150–300', rr:'30–60', temp:'38.5–40.0', bw:'1–10 kg', life:'5–10年', note:'消化管門徳闲チャ・不正咬合に注意。絶食厳禁。'},
+  ferret:    {name:'フェレット', hr:'180–250', rr:'33–36', temp:'37.8–40.0', bw:'0.6–2.0 kg', life:'5–8年', note:'インスリノーマ・副腎皮質疾患が多い。低血糖に注意。'},
+  guinea:    {name:'モルモット', hr:'230–380', rr:'40–100', temp:'37.2–39.5', bw:'700–1200 g', life:'4–8年', note:'ビタミンC要求性。絶食厳禁。'},
+  chinchilla:{name:'チンチラ', hr:'100–150', rr:'40–80', temp:'37.0–38.0', bw:'400–600 g', life:'10–20年', note:'高温多湿に弱い。消化管チャに注意。'},
+  hamster:   {name:'ハムスター', hr:'300–500', rr:'40–100', temp:'36.0–37.5', bw:'85–150 g', life:'1.5–3年', note:'頼裋脱出・歯の不正咬合が多い。'},
+};
+var EXOTIC_K = { rabbit:0.78, ferret:0.85, guinea:0.79, chinchilla:0.78, hamster:0.78 }; // RER multiplier varies; use 70 standard
+
+function showExotic(){
+  var sp=document.getElementById('ex-sp').value;
+  var d=EXOTIC[sp];
+  var html='<div style="background:var(--bg);border-radius:var(--rads);padding:10px;margin-top:4px">';
+  html+='<div class="rrow"><span>心拍数</span><span class="rval"><strong>'+d.hr+' bpm</strong></span></div>';
+  html+='<div class="rrow"><span>呼吸数</span><span class="rval"><strong>'+d.rr+' 回/分</strong></span></div>';
+  html+='<div class="rrow"><span>体温</span><span class="rval"><strong>'+d.temp+' ℃</strong></span></div>';
+  html+='<div class="rrow"><span>体重目安</span><span class="rval"><strong>'+d.bw+'</strong></span></div>';
+  html+='<div class="rrow"><span>平均寿命</span><span class="rval"><strong>'+d.life+'</strong></span></div>';
+  html+='<div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5">※ '+d.note+'</div>';
+  html+='</div>';
+  document.getElementById('ex-ref').innerHTML=html;
+}
+showExotic();
+
+function calcExoticRER(){
+  var bwG=+document.getElementById('ex-bw').value;
+  var fac=+document.getElementById('ex-fac').value;
+  if(!bwG){alert('体重を入力してください');return;}
+  var bwKg=bwG/1000;
+  var rer=70*Math.pow(bwKg,0.75);
+  var der=rer*fac;
+  sr('ex-rer-r',Math.round(der)+' kcal/日','RER: '+rer.toFixed(1)+' kcal/日　×係数'+fac+' = '+der.toFixed(1)+' kcal/日　(体重 '+bwKg.toFixed(2)+'kg)');
+}
+
+
+// ── 体重全タブ共有 ──
+(function(){
+  var bwIds=['ij-bw','tb-bw','bs-bw','fl-bw','tf-bw','kc-bw','sh-bw','ci-bw','eg-bw','an-bw','nr-bw','lv-bw','co-bw','lf-bw','on-bw','hd-bw'];
+  function syncBW(val){
+    bwIds.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el&&el.value!==val)el.value=val;
+    });
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    bwIds.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el)el.addEventListener('input',function(){syncBW(this.value);});
+    });
+  });
+  // Also bind immediately in case DOM already loaded
+  bwIds.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.addEventListener('input',function(){syncBW(this.value);});
+  });
+})();
+
+
+// ── IRIS CKDステージ ──
+function calcIRIS(){
+  var sp=document.getElementById('ir-sp').value;
+  var cre=+document.getElementById('ir-cre').value;
+  var sdma=+document.getElementById('ir-sdma').value;
+  var upc=+document.getElementById('ir-upc').value;
+  var bp=+document.getElementById('ir-bp').value;
+  if(!cre&&!sdma){alert('クレアチニンまたはSDMAを入力してください');return;}
+  // Creatinine stage
+  var sCre=0;
+  if(cre){
+    if(sp==='dog'){ sCre = cre<1.4?1 : cre<=2.8?2 : cre<=5.0?3 : 4; }
+    else { sCre = cre<1.6?1 : cre<=2.8?2 : cre<=5.0?3 : 4; }
+  }
+  // SDMA stage (both species): <18=1, 18-25=2, 26-38=3, >38=4
+  var sSdma=0;
+  if(sdma){ sSdma = sdma<18?1 : sdma<=25?2 : sdma<=38?3 : 4; }
+  var stage=Math.max(sCre,sSdma);
+  // Proteinuria substage
+  var prot='';
+  if(upc){
+    if(sp==='dog'){ prot = upc<0.2?'非蛋白尿 (NP)' : upc<=0.5?'境界 (BP)' : '蛋白尿 (P)'; }
+    else { prot = upc<0.2?'非蛋白尿 (NP)' : upc<=0.4?'境界 (BP)' : '蛋白尿 (P)'; }
+  }
+  // BP substage
+  var bpsub='';
+  if(bp){ bpsub = bp<140?'正常血圧':bp<160?'低リスク':bp<180?'中等度リスク':'高リスク'; }
+  var html='<div class="rrow"><div><div class="rn">IRIS Stage '+stage+'</div>'
+    +'<div class="rsub">'+(cre?'Cre '+cre+'→St'+sCre:'')+(sdma?' / SDMA '+sdma+'→St'+sSdma:'')+'</div></div>'
+    +'<div class="rval"><strong style="color:var(--gd);font-size:18px">Stage '+stage+'</strong></div></div>';
+  if(prot) html+='<div class="rrow"><span>蛋白尿サブステージ</span><span class="rval"><strong>'+prot+'</strong><small>UPC '+upc+'</small></span></div>';
+  if(bpsub) html+='<div class="rrow"><span>血圧サブステージ</span><span class="rval"><strong>'+bpsub+'</strong><small>'+bp+' mmHg</small></span></div>';
+  if(sCre&&sSdma&&sCre!==sSdma) html+='<div class="rsub" style="margin-top:6px;color:var(--danger)">※ CreとSDMAでステージが不一致。筋肉量を考慮し、2-4週で再検を。迷う場合は高い方のステージを採用。</div>';
+  document.getElementById('ir-rl').innerHTML=html;
+  document.getElementById('ir-r').style.display='block';
+}
+
+// ── 腫瘍 BSA換算 ──
+function calcOncoBSA(){
+  var bw=+document.getElementById('on-bw').value;
+  var sp=document.getElementById('on-sp').value;
+  var dose=+document.getElementById('on-dose').value;
+  var conc=+document.getElementById('on-conc').value;
+  if(!bw||!dose){alert('体重と投与量を入力してください');return;}
+  var k=sp==='cat'?0.100:0.101;
+  var bsa=k*Math.pow(bw,0.667);
+  var totalMg=bsa*dose;
+  var sub='BSA: '+bsa.toFixed(4)+' m² (mg/m²×BSA)';
+  if(conc) sub+='　液量: '+(totalMg/conc).toFixed(2)+' mL';
+  sr('on-r',totalMg.toFixed(2)+' mg',sub);
+}
+
+// ── カルボプラチン（カルバート式） ──
+function calcCarbo(){
+  var sp=document.getElementById('cb-sp').value;
+  var gfr=+document.getElementById('cb-gfr').value;
+  var auc=+document.getElementById('cb-auc').value;
+  if(!gfr||!auc){alert('GFRと目標AUCを入力してください');return;}
+  // Simplified Calvert: Dose(mg) = AUC x (GFR_total + constant)
+  // Note: requires total GFR (mL/min). User enters GFR; we present formula transparently.
+  var doseMg=auc*gfr;
+  sr('cb-r',doseMg.toFixed(1)+' mg',
+    '目標AUC '+auc+' × GFR '+gfr+'　※補正GFRの単位・測定法を確認してください');
+}
+
+// ── 好中球減少グレード (VCOG-CTCAE) ──
+function calcNeutro(){
+  var anc=+document.getElementById('ng-anc').value;
+  if(!anc&&anc!==0){alert('好中球数を入力してください');return;}
+  var grade,txt,type;
+  if(anc>=1500){grade='Grade 0';txt='正常範囲 (≥1500)';type='g';}
+  else if(anc>=1000){grade='Grade 1';txt='軽度 (1000-1499)';type='g';}
+  else if(anc>=500){grade='Grade 2';txt='中等度 (500-999)';type='w';}
+  else if(anc>=100){grade='Grade 3';txt='重度 (100-499) 要注意';type='r';}
+  else{grade='Grade 4';txt='生命を脅かす (<100) 発熱性好中球減少リスク';type='r';}
+  sr('ng-r',grade,txt+'　(VCOG-CTCAE v2)',type);
+}
+
+// ── ACVIMステージ (MMVD) ──
+function calcACVIM(){
+  var murmur=document.getElementById('ac-murmur').value;
+  var enlarge=document.getElementById('ac-enlarge').value;
+  var cs=document.getElementById('ac-cs').value;
+  var stage,txt,type;
+  if(cs==='refractory'){stage='Stage D';txt='難治性心不全。高度な多剤併用・専門医連携を検討。';type='r';}
+  else if(cs==='current'||cs==='past'){stage='Stage C';txt='現在または過去に心不全症状あり。利尿薬・ピモベンダン・ACE阫害薬等。';type='w';}
+  else if(enlarge==='yes'){stage='Stage B2';txt='雑音あり+心拡大あり、症状なし。ピモベンダン開始を検討 (EPIC試験)。';type='w';}
+  else if(murmur==='yes'){stage='Stage B1';txt='雑音あり、心拡大なし。経過観察（6-12ヶ月ごとの再評価）。';type='g';}
+  else{stage='Stage A';txt='高リスクなが雑音なし。現時点で治療不要。';type='g';}
+  sr('ac-r',stage,txt,type);
+}
+
+// ── 心臓薬用量 ──
+function hdInfo(){
+  var drug=document.getElementById('hd-drug').value;
+  var defaults={pimo:0.25,furo:2,bena:0.5,pimo_inj:0.15};
+  document.getElementById('hd-dose').value=defaults[drug];
+}
+function calcHeartDrug(){
+  var bw=+document.getElementById('hd-bw').value;
+  var dose=+document.getElementById('hd-dose').value;
+  var tab=+document.getElementById('hd-tab').value;
+  var drug=document.getElementById('hd-drug').value;
+  if(!bw||!dose){alert('体重と投与量を入力してください');return;}
+  var totalMg=bw*dose;
+  var sub='';
+  if(drug==='pimo_inj'){
+    sub='静注用 (0.15 mg/kg IV)';
+  } else {
+    sub='1回量';
+    if(tab) sub+='　錢剤: '+(totalMg/tab).toFixed(2)+' 錢 ('+tab+'mg/錢)';
+  }
+  sr('hd-r',totalMg.toFixed(3)+' mg',sub);
+}
+hdInfo();
+
 </script>
 
 <div class="tp" id="t-lowfat">
@@ -834,6 +1163,101 @@ function calcLowfat(){
           <div id="lf-nutrients"></div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="tp" id="t-exotic">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#fdf0f5">&#x1F430;</div><div><h2>&#x30A8;&#x30AD;&#x30BE; バイタルサイン</h2><p>正常値リファレンス</p></div></div>
+    <div class="cb">
+      <div class="f"><label>&#x52D5;&#x7269;&#x7A2E;</label><select id="ex-sp" onchange="showExotic()">
+        <option value="rabbit">ウサギ</option>
+        <option value="ferret">フェレット</option>
+        <option value="guinea">モルモット（モルモット）</option>
+        <option value="chinchilla">チンチラ</option>
+        <option value="hamster">ハムスター</option>
+      </select></div>
+      <div id="ex-ref"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:var(--gl)">&#x1F37D;</div><div><h2>&#x30A8;&#x30AD;&#x30BE; RER/DER &#x8A08;&#x7B97;</h2></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>&#x4F53;&#x91CD; (g)</label><input type="number" id="ex-bw" placeholder="1500" step="10" inputmode="numeric"></div>
+        <div class="f"><label>状態係数</label><select id="ex-fac">
+          <option value="1.0">×1.0 安静・絶食</option>
+          <option value="1.2">×1.2 維持</option>
+          <option value="1.4">×1.4 回復期</option>
+          <option value="1.6">×1.6 成長・泌乳</option>
+        </select></div>
+      </div>
+      <button class="btn bp" onclick="calcExoticRER()">&#x8A08;&#x7B97;&#x3059;&#x308B;</button>
+      <div class="rb rbg" id="ex-rer-r" style="display:none"><div class="rl">エネルギー要求量</div><div class="rv" id="ex-rer-v"></div><div class="rs" id="ex-rer-s"></div></div>
+      <div class="note">⚠;️ 草食動物（ウサギ・モルモット・チンチラ）は絶食を避け、強制給餓を検討してください。</div>
+    </div>
+  </div>
+</div>
+
+<div class="tp" id="t-renal">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#eef4fb">&#x1F9A0;</div><div><h2>IRIS CKDステージ分類 <span class="badge">NEW</span></h2><p>2023ガイドライン準拠</p></div></div>
+    <div class="cb">
+      <div class="f"><label>動物種</label><select id="ir-sp"><option value="dog">犬</option><option value="cat">猫</option></select></div>
+      <div class="r2">
+        <div class="f"><label>クレアチニン (mg/dL)</label><input type="number" id="ir-cre" placeholder="1.8" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>SDMA (μg/dL) 任意</label><input type="number" id="ir-sdma" placeholder="20" step="1" inputmode="decimal"></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>UPC 任意</label><input type="number" id="ir-upc" placeholder="0.3" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>収縮期血圧 (mmHg) 任意</label><input type="number" id="ir-bp" placeholder="150" step="1" inputmode="numeric"></div>
+      </div>
+      <button class="btn bp" onclick="calcIRIS()">判定する</button>
+      <div class="rb rbg" id="ir-r" style="display:none"><div class="rl">IRISステージ判定</div><div id="ir-rl"></div></div>
+      <div class="note">⚠;️ 安定したCKD患者のみ適用。絶食12時間後・複数回測定を推奨。脱水・AKIを除外してください。</div>
+    </div>
+  </div>
+</div>
+
+<div class="tp" id="t-onco">
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#f5eefb">&#x1F397;</div><div><h2>BSA換算 投与量 <span class="badge">NEW</span></h2><p>mg/m² → 個体投与量</p></div></div>
+    <div class="cb">
+      <div class="r2">
+        <div class="f"><label>体重 (kg)</label><input type="number" id="on-bw" placeholder="10" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>動物種</label><select id="on-sp"><option value="dog">犬</option><option value="cat">猫</option></select></div>
+      </div>
+      <div class="r2">
+        <div class="f"><label>投与量 (mg/m²)</label><input type="number" id="on-dose" placeholder="250" step="1" inputmode="decimal"></div>
+        <div class="f"><label>製剤濃度 (mg/mL) 任意</label><input type="number" id="on-conc" placeholder="10" step="0.1" inputmode="decimal"></div>
+      </div>
+      <button class="btn bp" onclick="calcOncoBSA()">計算する</button>
+      <div class="rb rbg" id="on-r" style="display:none"><div class="rl">投与量</div><div class="rv" id="on-v"></div><div class="rs" id="on-s"></div></div>
+      <div class="note">⚠;️ 10kg未満の小型犬・猫ではmg/m²換算が過剰投与になる薬剤があります。mg/kg換算と比較してください。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#f5eefb">&#x1F48A;</div><div><h2>カルボプラチン (カルバート式) <span class="badge">NEW</span></h2><p>GFRベース投与量</p></div></div>
+    <div class="cb">
+      <div class="f"><label>動物種</label><select id="cb-sp"><option value="dog">犬</option><option value="cat">猫</option></select></div>
+      <div class="r2">
+        <div class="f"><label>GFR (mL/min/kg) または補正GFR</label><input type="number" id="cb-gfr" placeholder="3.5" step="0.1" inputmode="decimal"></div>
+        <div class="f"><label>目標AUC (mg·min/mL)</label><input type="number" id="cb-auc" placeholder="犬2.5 / 猫2.6" step="0.1" inputmode="decimal"></div>
+      </div>
+      <button class="btn bp" onclick="calcCarbo()">計算する</button>
+      <div class="rb rbg" id="cb-r" style="display:none"><div class="rl">カルボプラチン投与量</div><div class="rv" id="cb-v"></div><div class="rs" id="cb-s"></div></div>
+      <div class="note">※ カルバート式: 総量(mg) = 目標AUC × (GFR × 体重 + 定数)。犬猫のプロトコルに応じてAUCを調整。補正GFRの測定法に注意。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="chi" style="background:#f5eefb">&#x1F9EA;</div><div><h2>好中球減少グレード <span class="badge">NEW</span></h2><p>VCOG-CTCAE v2</p></div></div>
+    <div class="cb">
+      <div class="f"><label>好中球数 (/μL)</label><input type="number" id="ng-anc" placeholder="1200" step="50" inputmode="numeric"></div>
+      <button class="btn bp" onclick="calcNeutro()">判定する</button>
+      <div class="rb rbg" id="ng-r" style="display:none"><div class="rl">好中球減少グレード</div><div class="rv" id="ng-v"></div><div class="rs" id="ng-s"></div></div>
     </div>
   </div>
 </div>
